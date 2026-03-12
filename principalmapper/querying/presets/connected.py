@@ -23,7 +23,7 @@ from principalmapper.common import Edge, Node, Graph
 from principalmapper.querying.query_utils import get_search_list
 
 
-def handle_preset_query(graph: Graph, tokens: List[str], skip_admins: bool = False) -> None:
+def handle_preset_query(graph: Graph, tokens: List[str], skip_admins: bool = False, exploit: bool = False) -> None:
     """Handles a human-readable query that's been chunked into tokens, and writes the result to output."""
     source_target = tokens[2]
     dest_target = tokens[3]
@@ -40,10 +40,10 @@ def handle_preset_query(graph: Graph, tokens: List[str], skip_admins: bool = Fal
     else:
         dest_nodes.append(graph.get_node_by_searchable_name(dest_target))
 
-    print_connected_results(graph, source_nodes, dest_nodes, skip_admins)
+    print_connected_results(graph, source_nodes, dest_nodes, skip_admins, exploit)
 
 
-def print_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: List[Node], skip_admins: bool = False) -> None:
+def print_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: List[Node], skip_admins: bool = False, exploit: bool = False) -> None:
     """Handles a `connected` query and writes the results to output"""
     for snode in source_nodes:
         if skip_admins and snode.is_admin:
@@ -56,11 +56,15 @@ def print_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: 
                 print('{} is able to access {}:'.format(snode.searchable_name(), dnode.searchable_name()))
                 for edge in path:
                     print('   {}'.format(edge.describe_edge()))
+                    if exploit and getattr(edge, 'exploit_cmds', None):
+                        print('      Exploit commands:')
+                        for cmd in edge.exploit_cmds:
+                            print(f'        {cmd}')
                 print()
 
 
 def write_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: List[Node], skip_admins: bool = False,
-                            output: io.StringIO = os.devnull) -> None:
+                            exploit: bool = False, output: io.StringIO = os.devnull) -> None:
     """Handles a `connected` query and writes the results to output"""
     for snode in source_nodes:
         if skip_admins and snode.is_admin:
@@ -73,6 +77,10 @@ def write_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: 
                 output.write('{} is able to access {}:\n'.format(snode.searchable_name(), dnode.searchable_name()))
                 for edge in path:
                     output.write('   {}\n'.format(edge.describe_edge()))
+                    if exploit and getattr(edge, 'exploit_cmds', None):
+                        output.write('      Exploit commands:\n')
+                        for cmd in edge.exploit_cmds:
+                            output.write(f'        {cmd}\n')
 
 
 def is_connected(graph: Graph, source_node: Node, dest_node: Node) -> (bool, List[Edge]):

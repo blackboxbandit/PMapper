@@ -40,10 +40,10 @@ from principalmapper.querying.presets.privesc import can_privesc
 from principalmapper.util import arns
 
 
-def gen_findings_and_print(graph: Graph, formatting: str) -> None:
+def gen_findings_and_print(graph: Graph, formatting: str, exploit: bool = False) -> None:
     """Generates findings of risk, prints them out."""
 
-    report = gen_report(graph)
+    report = gen_report(graph, exploit)
 
     if formatting == 'text':
         print_report(report)
@@ -51,9 +51,9 @@ def gen_findings_and_print(graph: Graph, formatting: str) -> None:
         print(json.dumps(report.as_dictionary(), indent=4))
 
 
-def gen_report(graph: Graph) -> Report:
+def gen_report(graph: Graph, exploit: bool = False) -> Report:
     """Generates a Report object with findings and metadata about report-generation"""
-    findings = gen_all_findings(graph)
+    findings = gen_all_findings(graph, exploit)
     return Report(
         graph.metadata['account_id'],
         dt.datetime.now(dt.timezone.utc),
@@ -64,10 +64,10 @@ def gen_report(graph: Graph) -> Report:
     )
 
 
-def gen_all_findings(graph: Graph) -> List[Finding]:
+def gen_all_findings(graph: Graph, exploit: bool = False) -> List[Finding]:
     """Generates findings of risk, returns a list of finding-dictionary objects."""
     result = []
-    result.extend(gen_privesc_findings(graph))
+    result.extend(gen_privesc_findings(graph, exploit))
     result.extend(gen_admin_users_without_mfa_finding(graph))
     result.extend(gen_mfa_actions_findings(graph))
     # TODO: result.extend(gen_mfa_evasion_finding(graph))  # policies that allow attackers to change MFA devices
@@ -79,7 +79,7 @@ def gen_all_findings(graph: Graph) -> List[Finding]:
     return result
 
 
-def gen_privesc_findings(graph: Graph) -> List[Finding]:
+def gen_privesc_findings(graph: Graph, exploit: bool = False) -> List[Finding]:
     """Generates findings related to privilege escalation risks."""
     result = []
 
@@ -109,6 +109,10 @@ def gen_privesc_findings(graph: Graph) -> List[Finding]:
                 node.searchable_name(), end_of_list.searchable_name())
             for edge in edge_list:
                 description_body += '   * {}\n'.format(edge.describe_edge())
+                if exploit and getattr(edge, 'exploit_cmds', None):
+                    description_body += '      * Exploit commands:\n'
+                    for cmd in edge.exploit_cmds:
+                        description_body += f'        * {cmd}\n'
             description_body += '\n'
 
         result.append(Finding(

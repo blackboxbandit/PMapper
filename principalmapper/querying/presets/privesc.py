@@ -25,7 +25,7 @@ from principalmapper.common import Edge, Node, Graph
 from principalmapper.querying.query_utils import get_search_list
 
 
-def handle_preset_query(graph: Graph, tokens: List[str], skip_admins: bool = False) -> None:
+def handle_preset_query(graph: Graph, tokens: List[str], skip_admins: bool = False, exploit: bool = False) -> None:
     """Handles a human-readable query that's been chunked into tokens, and prints the result."""
 
     # Get the nodes we're determining can privesc or not
@@ -35,10 +35,10 @@ def handle_preset_query(graph: Graph, tokens: List[str], skip_admins: bool = Fal
         nodes.extend(graph.nodes)
     else:
         nodes.append(graph.get_node_by_searchable_name(target))
-    print_privesc_results(graph, nodes, skip_admins)
+    print_privesc_results(graph, nodes, skip_admins, exploit)
 
 
-def print_privesc_results(graph: Graph, nodes: List[Node], skip_admins: bool = False) -> None:
+def print_privesc_results(graph: Graph, nodes: List[Node], skip_admins: bool = False, exploit: bool = False) -> None:
     """Handles a privesc query and writes the result to output."""
     for node in nodes:
         if skip_admins and node.is_admin:
@@ -56,6 +56,10 @@ def print_privesc_results(graph: Graph, nodes: List[Node], skip_admins: bool = F
                 node.searchable_name(), end_of_list.searchable_name()))
             for edge in edge_list:
                 print('   {}'.format(edge.describe_edge()))
+                if exploit and getattr(edge, 'exploit_cmds', None):
+                    print('      Exploit commands:')
+                    for cmd in edge.exploit_cmds:
+                        print(f'        {cmd}')
             print()
 
 

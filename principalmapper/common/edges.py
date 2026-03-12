@@ -24,7 +24,7 @@ class Edge(object):
     the source Node is able to access the destination Node.
     """
 
-    def __init__(self, source, destination, reason: str, short_reason: str):
+    def __init__(self, source, destination, reason: str, short_reason: str, exploit_cmds=None):
         """Constructor"""
         if source is None:
             raise ValueError('Edges must have a source Node object')
@@ -39,6 +39,7 @@ class Edge(object):
         self.destination = destination
         self.reason = reason
         self.short_reason = short_reason
+        self.exploit_cmds = exploit_cmds if exploit_cmds is not None else []
 
     def describe_edge(self) -> str:
         """Returns a human-readable string explaining the edge"""
@@ -54,5 +55,6 @@ class Edge(object):
             'source': self.source.arn,
             'destination': self.destination.arn,
             'reason': self.reason,
-            'short_reason': self.short_reason
+            'short_reason': self.short_reason,
+            'exploit_cmds': self.exploit_cmds
         }

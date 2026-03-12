@@ -178,19 +178,19 @@ def query_response(graph: Graph, query: str, skip_admins: bool = False, resource
             print()
 
 
-def handle_preset(graph: Graph, query: str, skip_admins: bool = False) -> None:
+def handle_preset(graph: Graph, query: str, skip_admins: bool = False, exploit: bool = False) -> None:
     """Interprets, executes, and outputs the result to a preset query."""
     tokens = re.split(r'\s+', query, flags=re.UNICODE)
     if tokens[1] == 'privesc':
         if len(tokens) < 3:
             _print_query_help()
             return
-        privesc.handle_preset_query(graph, tokens, skip_admins)
+        privesc.handle_preset_query(graph, tokens, skip_admins, exploit)
     elif tokens[1] == 'connected':
         if len(tokens) < 4:
             _print_query_help()
             return
-        connected.handle_preset_query(graph, tokens, skip_admins)
+        connected.handle_preset_query(graph, tokens, skip_admins, exploit)
     elif tokens[1] == 'clusters':
         if len(tokens) < 3:
             _print_query_help()
@@ -223,7 +223,7 @@ def _print_query_help() -> None:
 def argquery(graph: Graph, principal_param: Optional[str], action_param: Optional[str], resource_param: Optional[str],
              condition_param: Optional[dict], preset_param: Optional[str], skip_admins: bool = False,
              resource_policy: dict = None, resource_owner: str = None, include_unauthorized: bool = False,
-             session_policy: Optional[dict] = None, scps: Optional[List[List[dict]]] = None) -> None:
+             session_policy: Optional[dict] = None, scps: Optional[List[List[dict]]] = None, exploit: bool = False) -> None:
     """Splits between running a normal argquery and the presets."""
     if preset_param is not None:
         if preset_param == 'privesc':
@@ -239,7 +239,7 @@ def argquery(graph: Graph, principal_param: Optional[str], action_param: Optiona
             else:
                 nodes.append(graph.get_node_by_searchable_name(principal_param))
 
-            privesc.print_privesc_results(graph, nodes, skip_admins)
+            privesc.print_privesc_results(graph, nodes, skip_admins, exploit)
         elif preset_param == 'connected':
             # Validate params
             if action_param is not None:
@@ -257,7 +257,7 @@ def argquery(graph: Graph, principal_param: Optional[str], action_param: Optiona
             else:
                 dest_nodes.append(graph.get_node_by_searchable_name(resource_param))
 
-            connected.write_connected_results(graph, source_nodes, dest_nodes, skip_admins)
+            connected.write_connected_results(graph, source_nodes, dest_nodes, skip_admins, exploit)
         elif preset_param == 'clusters':
             # validate params
             if action_param is not None:

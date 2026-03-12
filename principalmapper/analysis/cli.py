@@ -32,6 +32,11 @@ def provide_arguments(parser: ArgumentParser):
         choices=['text', 'json'],
         help='The type of output for identified issues.'
     )
+    parser.add_argument(
+        '--exploit',
+        action='store_true',
+        help='Include AWS CLI exploit commands in the output for identified privilege escalation paths.'
+    )
 
 
 def process_arguments(parsed_args: Namespace) -> int:
@@ -44,6 +49,6 @@ def process_arguments(parsed_args: Namespace) -> int:
         session = None
     graph = graph_actions.get_existing_graph(session, parsed_args.account)
 
-    find_risks.gen_findings_and_print(graph, parsed_args.output_type)
+    find_risks.gen_findings_and_print(graph, parsed_args.output_type, getattr(parsed_args, 'exploit', False))
 
     return 0

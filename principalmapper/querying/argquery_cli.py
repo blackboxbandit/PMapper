@@ -68,6 +68,11 @@ def provide_arguments(parser: ArgumentParser):
         '--preset',
         help='A preset query to run'
     )
+    parser.add_argument(
+        '--exploit',
+        action='store_true',
+        help='Output AWS CLI exploit commands if an attack path is found'
+    )
     argquery_rpolicy_args = parser.add_mutually_exclusive_group()
     argquery_rpolicy_args.add_argument(
         '--with-resource-policy',
@@ -153,6 +158,6 @@ def process_arguments(parsed_args: Namespace):
     query_actions.argquery(graph, parsed_args.principal, parsed_args.action, parsed_args.resource, conditions,
                            parsed_args.preset, parsed_args.skip_admin, resource_policy,
                            resource_owner, parsed_args.include_unauthorized, parsed_args.session_policy,
-                           scps)
+                           scps, getattr(parsed_args, 'exploit', False))
 
     return 0

