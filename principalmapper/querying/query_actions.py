@@ -257,7 +257,7 @@ def argquery(graph: Graph, principal_param: Optional[str], action_param: Optiona
             else:
                 dest_nodes.append(graph.get_node_by_searchable_name(resource_param))
 
-            connected.write_connected_results(graph, source_nodes, dest_nodes, skip_admins, exploit)
+            connected.print_connected_results(graph, source_nodes, dest_nodes, skip_admins, exploit)
         elif preset_param == 'clusters':
             # validate params
             if action_param is not None:

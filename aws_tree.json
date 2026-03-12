@@ -1,0 +1,78 @@
+{
+  "sha": "42c400f4e8bbbdcff592c33ca9ff7b41204ebe10",
+  "url": "https://api.github.com/repos/iann0036/iam-dataset/git/trees/42c400f4e8bbbdcff592c33ca9ff7b41204ebe10",
+  "tree": [
+    {
+      "path": "MAP-README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee2353877e4d39eec1cfcdf69153d489fafcdf57",
+      "size": 5272,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/ee2353877e4d39eec1cfcdf69153d489fafcdf57"
+    },
+    {
+      "path": "access_level_overrides.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06807e6a3194525967f4e41d42e21703cae51abc",
+      "size": 16447,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/06807e6a3194525967f4e41d42e21703cae51abc"
+    },
+    {
+      "path": "docs.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c04b6f276afcfe32a8ad979b067086dbd410d52",
+      "size": 7671783,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/3c04b6f276afcfe32a8ad979b067086dbd410d52"
+    },
+    {
+      "path": "historic_counts.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd3c8d7635454e05567e81b9b2bdd06f851e03c7",
+      "size": 273832,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/fd3c8d7635454e05567e81b9b2bdd06f851e03c7"
+    },
+    {
+      "path": "iam_definition.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "77dd5a64d1c833eb5422862923835ec72d621e38",
+      "size": 10951740,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/77dd5a64d1c833eb5422862923835ec72d621e38"
+    },
+    {
+      "path": "managed_policies.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "344b340127dcb6fbb3e53ed445b7aa37fecdc167",
+      "size": 8616060,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/344b340127dcb6fbb3e53ed445b7aa37fecdc167"
+    },
+    {
+      "path": "managedpolicies",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "656f2495636ccc9bdc8572d078beeefe1e1a852c",
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/trees/656f2495636ccc9bdc8572d078beeefe1e1a852c"
+    },
+    {
+      "path": "map.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7581b2bee415505ab7c671d7607bc0af98986872",
+      "size": 6922875,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/7581b2bee415505ab7c671d7607bc0af98986872"
+    },
+    {
+      "path": "tags.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "21d60e43c9f41e00029cad8214db6389548c807a",
+      "size": 68740,
+      "url": "https://api.github.com/repos/iann0036/iam-dataset/git/blobs/21d60e43c9f41e00029cad8214db6389548c807a"
+    }
+  ],
+  "truncated": false
+}

@@ -64,7 +64,7 @@ def print_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: 
 
 
 def write_connected_results(graph: Graph, source_nodes: List[Node], dest_nodes: List[Node], skip_admins: bool = False,
-                            exploit: bool = False, output: io.StringIO = os.devnull) -> None:
+                            exploit: bool = False, output: io.StringIO = None) -> None:
     """Handles a `connected` query and writes the results to output"""
     for snode in source_nodes:
         if skip_admins and snode.is_admin:
