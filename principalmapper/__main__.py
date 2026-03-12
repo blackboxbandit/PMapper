@@ -141,6 +141,12 @@ def main() -> int:
     logging.getLogger('principalmapper.querying.query_interface').setLevel(logging.WARNING)
 
     logger.debug('Parsed args: {}'.format(parsed_args))
+
+    if parsed_args.picked_cmd is None:
+        print('Error: No subcommand provided. Please select a subcommand to execute.')
+        argument_parser.print_help()
+        return 64
+
     if parsed_args.picked_cmd == 'graph':
         return graph_cli.process_arguments(parsed_args)
     elif parsed_args.picked_cmd == 'orgs':

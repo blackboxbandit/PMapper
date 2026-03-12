@@ -48,11 +48,19 @@ def process_arguments(parsed_args: Namespace):
     """Given a namespace object generated from parsing args, perform the appropriate tasks. Returns an int
     matching expectations set by /usr/include/sysexits.h for command-line utilities."""
 
-    if parsed_args.account is None:
-        session = botocore_tools.get_session(parsed_args.profile)
-    else:
-        session = None
-    graph = graph_actions.get_existing_graph(session, parsed_args.account)
+    try:
+        if parsed_args.account is None:
+            session = botocore_tools.get_session(parsed_args.profile)
+        else:
+            session = None
+        graph = graph_actions.get_existing_graph(session, parsed_args.account)
+    except Exception as e:
+        if parsed_args.account is None:
+            print(f'Error: Unable to establish a live AWS session ({e}).')
+            print('If you want to run an offline visualization, please specify the account ID with --account.')
+        else:
+            print(f'Error: Unable to load graph for account {parsed_args.account} ({e}).')
+        return 1
 
     if parsed_args.only_privesc:
         filepath = './{}-privesc-risks.{}'.format(graph.metadata['account_id'], parsed_args.filetype)

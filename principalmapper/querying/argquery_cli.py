@@ -103,11 +103,24 @@ def process_arguments(parsed_args: Namespace):
     """Given a namespace object generated from parsing args, perform the appropriate tasks. Returns an int
     matching expectations set by /usr/include/sysexits.h for command-line utilities."""
 
-    if parsed_args.account is None:
-        session = botocore_tools.get_session(parsed_args.profile)
-    else:
-        session = None
-    graph = graph_actions.get_existing_graph(session, parsed_args.account)
+    if parsed_args.action is None and parsed_args.preset is None:
+        print('Error: Must specify either an action (--action) or a preset query (--preset) to run a query.')
+        return 64
+
+    try:
+        if parsed_args.account is None:
+            session = botocore_tools.get_session(parsed_args.profile)
+        else:
+            session = None
+        graph = graph_actions.get_existing_graph(session, parsed_args.account)
+    except Exception as e:
+        if parsed_args.account is None:
+            print(f'Error: Unable to establish a live AWS session ({e}).')
+            print('If you want to run an offline query, please specify the account ID with --account.')
+        else:
+            print(f'Error: Unable to load graph for account {parsed_args.account} ({e}).')
+        return 1
+
     logger.debug('Querying against graph {}'.format(graph.metadata['account_id']))
 
     # process condition args to generate input dict
