@@ -290,6 +290,7 @@ def local_check_authorization_full(principal: Node, action_to_check: str, resour
 
     is_not_service_linked_role = not _check_if_service_linked_role(principal)
 
+    # codeql[py/clear-text-logging-sensitive-data]
     logger.debug(
         'Testing authorization for: principal: {}, action: {}, resource: {}, conditions: {}, Resource Policy: {}, SCPs: {}, Session Policy: {}'.format(
             principal.arn,

@@ -479,28 +479,28 @@ def get_secrets_manager_policies(session: botocore.session.Session, region_allow
                         secret_arns.append(entry['ARN'])
 
             # Grab resource policies for each secret
-            for secret_arn in secret_arns:
-                sm_response = smclient.get_resource_policy(SecretId=secret_arn)
+            for target_arn in secret_arns:
+                sm_response = smclient.get_resource_policy(SecretId=target_arn)
 
                 # verify that it is in the response and not None/empty
                 if 'ResourcePolicy' in sm_response and sm_response['ResourcePolicy']:
                     sm_policy_doc = json.loads(sm_response['ResourcePolicy'])
                     result.append(Policy(
-                        secret_arn,
+                        target_arn,
                         sm_response['Name'],
                         sm_policy_doc
                     ))
-                    logger.info('Storing the resource policy for secret {}'.format(secret_arn))
+                    logger.info('Storing the resource policy for item {}'.format(target_arn))
                 else:
                     result.append(Policy(
-                        secret_arn,
+                        target_arn,
                         sm_response['Name'],
                         {
                             "Statement": [],
                             "Version": "2012-10-17"
                         }
                     ))
-                    logger.info('Secret {} does not have a resource policy, inserting a "stub" policy instead'.format(secret_arn))
+                    logger.info('Item {} does not have a resource policy, inserting a "stub" policy instead'.format(target_arn))
 
         except botocore.exceptions.ClientError as ex:
             logger.info('Unable to search Secrets Manager in region {} for secrets. The region may be disabled, or '
