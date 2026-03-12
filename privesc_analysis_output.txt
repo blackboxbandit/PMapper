@@ -1,0 +1,1550 @@
+====================================================================================================
+PATTERN 1: Services that consume iam:PassRole (accept role ARNs)
+====================================================================================================
+
+--- New PassRole (Create/Run/Start actions) ---
+
+  [airflow]
+    airflow:CreateWebLoginToken
+    airflow:InvokeRestApi
+
+  [devicefarm]
+    devicefarm:CreateInstanceProfile
+
+  [dms]
+    dms:CreateInstanceProfile
+
+  [ecs]
+    ecs:PutAccountSetting
+
+  [iam]
+    iam:CreateInstanceProfile
+    iam:CreateRole
+    iam:CreateServiceLinkedRole
+    iam:PutRolePermissionsBoundary
+    iam:PutRolePolicy
+
+  [iot]
+    iot:CreateRoleAlias
+
+  [monitron]
+    monitron:CreateUserAccessRoleAssociation
+
+  [quicksight]
+    quicksight:RegisterUser
+
+--- Existing PassRole (Update/Modify actions on resources with roles) ---
+
+  [codecatalyst]
+    codecatalyst:AssociateIamRoleToConnection
+
+  [connect]
+    connect:UpdateParticipantRoleConfig
+
+  [datazone]
+    datazone:AssociateEnvironmentRole
+
+  [devicefarm]
+    devicefarm:UpdateInstanceProfile
+
+  [dms]
+    dms:UpdateInstanceProfile
+
+  [ec2]
+    ec2:AssociateEnclaveCertificateIamRole
+    ec2:AssociateIamInstanceProfile
+    ec2:GetAssociatedEnclaveCertificateIamRoles
+    ec2:ReplaceIamInstanceProfileAssociation
+
+  [ecs]
+    ecs:DeleteAccountSetting
+
+  [elasticbeanstalk]
+    elasticbeanstalk:AssociateEnvironmentOperationsRole
+
+  [greengrass]
+    greengrass:AssociateRoleToGroup
+    greengrass:AssociateServiceRoleToAccount
+    greengrass:GetAssociatedRole
+
+  [iam]
+    iam:AddRoleToInstanceProfile
+    iam:AttachRolePolicy
+    iam:ListAttachedRolePolicies
+    iam:UpdateAssumeRolePolicy
+    iam:UpdateRole
+    iam:UpdateRoleDescription
+
+  [iot]
+    iot:UpdateRoleAlias
+
+  [mgh]
+    mgh:AssociateAutomationUnitRole
+    mgh:BatchAssociateIamRoleWithConnection
+
+  [partnercentral-account-management]
+    partnercentral-account-management:AssociatePartnerUser
+
+  [quicksight]
+    quicksight:UpdateRoleCustomPermission
+
+  [rds]
+    rds:AddRoleToDBCluster
+    rds:AddRoleToDBInstance
+
+  [ssm]
+    ssm:UpdateManagedInstanceRole
+
+  [sts]
+    sts:SetContext
+    sts:SetSourceIdentity
+
+
+====================================================================================================
+PATTERN 2: Actions that enable arbitrary code execution
+====================================================================================================
+
+Services with code execution capabilities (write/create actions only):
+
+  [a2c] (1 actions)
+    StartContainerizationJob: Grants permission to start a Containerization job
+
+  [a4b] (2 actions)
+    CreateSkillGroup: Grants permission to create a skill group with given name and description
+    PutInvitationConfiguration: Grants permission to configure the email template for the user enrollment invitation with the specified attributes
+
+  [access-analyzer] (1 actions)
+    GenerateFindingRecommendation: Grants permission to generate recommendation steps to resolve a finding
+
+  [aidevops] (2 actions)
+    SendChatMessage: Grants permission to invoke an agent
+    StreamMessage: Grants permission to invoke an agent
+
+  [airflow] (2 actions)
+    CreateCliToken: Grants permission to create a short-lived token that allows a user to invoke Airflow CLI via an endpoint on the Apache A
+    InvokeRestApi: Grants permission to invoke Airflow REST API via an endpoint on the Apache Airflow Webserver
+
+  [amplifyuibuilder] (2 actions)
+    ExchangeCodeForToken: Grants permission to exchange a code for a token
+    StartCodegenJob: Grants permission to start a codegen job
+
+  [aoss] (3 actions)
+    CreateLifecyclePolicy: Grants permission to create a lifecycle policy
+    DeleteLifecyclePolicy: Grants permission to delete a lifecycle policy
+    UpdateLifecyclePolicy: Grants permission to update a lifecycle policy
+
+  [apigateway] (1 actions)
+    UpdateDomainNamePolicy: Grants permission to update the invoke policy of a custom domain name for private APIs
+
+  [app-integrations] (1 actions)
+    StartDataIntegrationExecution: Grants permission to start a data integration execution
+
+  [appflow] (1 actions)
+    CancelFlowExecutions: Grants permission to cancel in-progress executions of an Amazon AppFlow flow
+
+  [application-transformation] (1 actions)
+    StartContainerization: Grants permission to start a Containerization job
+
+  [appstream] (2 actions)
+    CreateAppBlock: Grants permission to create an app block. App blocks store details about the virtual hard disk that contains the files f
+    CreateUsageReportSubscription: Grants permission to create a usage report subscription. Usage reports are generated daily
+
+  [appsync] (6 actions)
+    CreateApiKey: Grants permission to create a unique key that you can distribute to clients who are executing your API
+    CreateFunction: Grants permission to create a new function
+    DeleteFunction: Grants permission to delete a function
+    EvaluateCode: Grants permission to evaluate code with a runtime and context
+    EvaluateMappingTemplate: Grants permission to evaluate template mapping
+    UpdateFunction: Grants permission to update an existing function
+
+  [aps] (3 actions)
+    CreateAlertManagerDefinition: Grants permission to create an alert manager definition
+    DeleteAlertManagerDefinition: Grants permission to delete an alert manager definition
+    PutAlertManagerDefinition: Grants permission to update an alert manager definition
+
+  [arc-region-switch] (5 actions)
+    ApprovePlanExecutionStep: Grants permission to approve a plan execution step
+    CancelPlanExecution: Grants permission to cancel a plan execution
+    StartPlanExecution: Grants permission to start a plan execution
+    UpdatePlanExecution: Grants permission to update a plan execution
+    UpdatePlanExecutionStep: Grants permission to update a plan execution step
+
+  [athena] (13 actions)
+    CancelQueryExecution: Grants permission to cancel query execution. Deprecated. Applies only to AWS services and principals that use Athena JDB
+    CreateNotebook: Grants permission to create a notebook
+    CreatePresignedNotebookUrl: Grants permission to create a presigned notebook url
+    DeleteNotebook: Grants permission to delete a notebook
+    ExportNotebook: Grants permission to export a notebook
+    ImportNotebook: Grants permission to import a notebook
+    RunQuery: Grants permission to run a query. Deprecated. Applies only to AWS services and principals that use Athena JDBC driver ea
+    StartCalculationExecution: Grants permission to start a calculation execution
+    StartQueryExecution: Grants permission to start a query execution using an SQL query provided as a string
+    StopCalculationExecution: Grants permission to stop a calculation execution
+    StopQueryExecution: Grants permission to stop the specified query execution
+    UpdateNotebook: Grants permission to update a notebook
+    UpdateNotebookMetadata: Grants permission to update notebook metadata
+
+  [autoscaling] (5 actions)
+    CompleteLifecycleAction: Grants permission to complete the lifecycle action for the specified token or instance with the specified result
+    DeleteLifecycleHook: Grants permission to deletes the specified lifecycle hook
+    ExecutePolicy: Grants permission to execute the specified policy
+    PutLifecycleHook: Grants permission to create or update a lifecycle hook for the specified Auto Scaling Group
+    RecordLifecycleActionHeartbeat: Grants permission to record a heartbeat for the lifecycle action associated with the specified token or instance
+
+  [aws-marketplace] (7 actions)
+    AcceptAgreementApprovalRequest: Grants permission to users to approve an incoming subscription request (for providers who provide products that require 
+    CancelAgreementRequest: Grants permission to users to cancel pending subscription requests for products that require subscription verification
+    RejectAgreementApprovalRequest: Grants permission to users to decline an incoming subscription requests (for providers who provide products that require
+    ResolveCustomer: Grants permission to resolve a registration token to obtain a CustomerIdentifier and product code
+    Subscribe: Grants permission to users to subscribe to AWS Marketplace products. Includes the ability to send a subscription request
+    Unsubscribe: Grants permission to users to remove subscriptions to AWS Marketplace products. Includes the ability to disable auto-ren
+    UpdateAgreementApprovalRequest: Grants permission to users to make changes to an incoming subscription request, including the ability to delete the pros
+
+  [b2bi] (2 actions)
+    CreateStarterMappingTemplate: Grants permission to generate a starter JSONATA/XSLT template
+    GenerateMapping: Grants permission to generate a starter JSONATA/XSLT mapping template from Amazon Bedrock
+
+  [backup] (2 actions)
+    CreateLogicallyAirGappedBackupVault: Grants permission to create a new logically air-gapped backup vault, a logical container where backups are stored
+    UpdateRecoveryPointLifecycle: Grants permission to update the lifecycle of the recovery point
+
+  [batch] (3 actions)
+    DeregisterJobDefinition: Grants permission to deregister an AWS Batch job definition in your account
+    RegisterJobDefinition: Grants permission to register an AWS Batch job definition in your account
+    SubmitJob: Grants permission to submit an AWS Batch job from a job definition in your account
+
+  [bedrock] (13 actions)
+    InvokeAutomatedReasoningPolicy: Grants permission to invoke an Automated Reasoning policy
+    InvokeBlueprintOptimizationAsync: Grants permission to invoke an async job to perform blueprint optimization
+    InvokeBlueprintRecommendationAsync: Grants permission to invoke blueprint recommendations asynchronously
+    InvokeDataAutomation: Grants permission to invoke a call to Sync API of Bedrock data automation
+    InvokeDataAutomationAsync: Grants permission to invoke a Bedrock data automation job
+    InvokeFlow: Grants permission to invoke a prompt flow with user input
+    InvokeModel: Grants permission to invoke the specified Bedrock model to run inference using the input provided in the request body
+    InvokeModelWithResponseStream: Grants permission to invoke the specified Bedrock model to run inference using the input provided in the request body wi
+    InvokeTool: Grants permission to invoke the specified Bedrock tool to run inference
+    PutInvocationStep: Grants permission to put an invocation step into an invocation in session
+    StartFlowExecution: Grants permission to start an execution of a flow alias
+    StopFlowExecution: Grants permission to stop an execution of a flow alias
+    ValidateFlowDefinition: Grants permission to validate prompt flow definitions
+
+  [bedrock-agentcore] (10 actions)
+    CreateCodeInterpreter: Grants permission to create a new custom code interpreter
+    DeleteCodeInterpreter: Grants permission to delete a custom code interpreter
+    InvokeAgentRuntime: Grants permission to invoke an agent runtime endpoint
+    InvokeAgentRuntimeForUser: Grants permission to invoke an agent runtime endpoint with X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+    InvokeAgentRuntimeWithWebSocketStream: Grants permission to invoke an agent runtime endpoint with WebSocket stream
+    InvokeAgentRuntimeWithWebSocketStreamForUser: Grants permission to invoke an agent runtime endpoint with WebSocket stream and with X-Amzn-Bedrock-AgentCore-Runtime-Us
+    InvokeCodeInterpreter: Grants permission to invoke a code interpreter session
+    InvokeGateway: Grants permission to invoke a gateway
+    StartCodeInterpreterSession: Grants permission to start a new code interpreter session
+    StopCodeInterpreterSession: Grants permission to stop a code interpreter session
+
+  [budgets] (2 actions)
+    CreateBudgetAction: Grants permission to configure a response that executes once your budget exceeds a specific budget threshold. Creating a
+    ExecuteBudgetAction: Grants permission to initiate a pending budget action as well as reverse a previously executed budget action
+
+  [cases] (3 actions)
+    CreateTemplate: Grants permission to create a template in the case domain
+    DeleteTemplate: Grants permission to delete the template in the case domain
+    UpdateTemplate: Grants permission to update the template in the case domain
+
+  [ce] (3 actions)
+    CreateAnomalySubscription: Grants permission to create a new Anomaly Subscription
+    DeleteAnomalySubscription: Grants permission to delete an Anomaly Subscription
+    UpdateAnomalySubscription: Grants permission to update an existing Anomaly Subscription
+
+  [chime] (14 actions)
+    CreateMediaCapturePipeline: Grants permission to create a media capture pipeline (tag-based access controls are only supported on media-pipelines-ch
+    CreateMediaConcatenationPipeline: Grants permission to create a media concatenation pipeline (tag-based access controls are only supported on media-pipeli
+    CreateMediaInsightsPipeline: Grants permission to create a media insights pipeline (tag-based access controls are only supported on media-pipelines-c
+    CreateMediaInsightsPipelineConfiguration: Grants permission to create a media insights pipeline configuration (tag-based access controls are only supported on med
+    CreateMediaLiveConnectorPipeline: Grants permission to create a media live connector pipeline (tag-based access controls are only supported on media-pipel
+    CreateMediaPipelineKinesisVideoStreamPool: Grants permission to create kinesis video stream pool (tag-based access controls are only supported on media-pipelines-c
+    CreateMediaStreamPipeline: Grants permission to create a media stream pipeline (tag-based access controls are only supported on media-pipelines-chi
+    DeleteMediaCapturePipeline: Grants permission to delete a media capture pipeline
+    DeleteMediaInsightsPipelineConfiguration: Grants permission to delete a media insights pipeline configuration
+    DeleteMediaPipeline: Grants permission to delete a media pipeline
+    StartMeetingTranscription: Grants permission to start transcription for a meeting
+    StopMeetingTranscription: Grants permission to stop transcription for a meeting
+    UpdateMediaInsightsPipelineConfiguration: Grants permission to update the status of a media insights pipeline configuration
+    UpdateMediaInsightsPipelineStatus: Grants permission to update the status of a media insights pipeline
+
+  [cleanrooms] (7 actions)
+    CreateAnalysisTemplate: Grants permission to create a new analysis template
+    CreatePrivacyBudgetTemplate: Grants permission to create a new privacy budget template
+    DeleteAnalysisTemplate: Grants permission to delete an existing analysis template
+    DeletePrivacyBudgetTemplate: Grants permission to delete an existing privacy budget template
+    PreviewPrivacyImpact: Grants permission to preview privacy budget template settings
+    UpdateAnalysisTemplate: Grants permission to update details of the analysis template
+    UpdatePrivacyBudgetTemplate: Grants permission to update details of the privacy budget template
+
+  [cloudformation] (15 actions)
+    ActivateType: Grants permission to activate a public third-party extension, making it available for use in stack templates
+    CreateGeneratedTemplate: Grants permission to create a template from existing resources that are not already managed with CloudFormation
+    CreateStack: Grants permission to create a stack as specified in the template
+    CreateStackSet: Grants permission to create a stackset as specified in the template
+    CreateUploadBucket: Grants permission to upload templates to Amazon S3 buckets. Used only by the AWS CloudFormation console and is not docum
+    DeleteChangeSet: Grants permission to delete the specified change set. Deleting change sets ensures that no one executes the wrong change
+    DeleteGeneratedTemplate: Grants permission to delete a generated template
+    DetectStackDrift: Grants permission to detects whether a stack's actual configuration differs, or has drifted, from it's expected configur
+    DetectStackResourceDrift: Grants permission to return information about whether a resource's actual configuration differs, or has drifted, from it
+    EstimateTemplateCost: Grants permission to return the estimated monthly cost of a template
+    ExecuteStackRefactor: Grants permission to execute a stack refactor using the input information that was provided when the specified stack ref
+    UpdateGeneratedTemplate: Grants permission to update a generated template. This can be used to change the name, add and remove resources, refresh
+    UpdateStack: Grants permission to update a stack as specified in the template
+    UpdateStackSet: Grants permission to update a stackset as specified in the template
+    ValidateTemplate: Grants permission to validate a specified template
+
+  [cloudfront] (10 actions)
+    CreateConnectionFunction: Grants permission to create a connection function
+    CreateFunction: Grants permission to create a CloudFront function
+    DeleteConnectionFunction: Grants permission to delete a connection function
+    DeleteFunction: Grants permission to delete a CloudFront function
+    PublishConnectionFunction: Grants permission to publish a connection function
+    PublishFunction: Grants permission to publish a CloudFront function
+    TestConnectionFunction: Grants permission to test a connection function
+    TestFunction: Grants permission to test a CloudFront function
+    UpdateConnectionFunction: Grants permission to update a connection function
+    UpdateFunction: Grants permission to update a CloudFront function
+
+  [cloudshell] (6 actions)
+    ApproveCommand: Grants permission to approve a command sent by another AWS service
+    CreateEnvironment: Grants permissions to create a CloudShell environment
+    CreateSession: Grants permissions to connect to a CloudShell environment from the AWS Management Console
+    DeleteEnvironment: Grants permission to delete a CloudShell environment
+    StartEnvironment: Grants permission to start a stopped CloudShell environment
+    StopEnvironment: Grants permission to stop a running CloudShell environment
+
+  [codeartifact] (2 actions)
+    TagResource: Grants permission to tag a CodeArtifact resource
+    UntagResource: Grants permission to remove a tag from a CodeArtifact resource
+
+  [codebuild] (8 actions)
+    CreateReport: Grants permission to create a report. A report is created when tests specified in the buildspec file for a report groups
+    CreateWebhook: Grants permission to create webhook. For an existing AWS CodeBuild build project that has its source code stored in a Gi
+    DeleteOAuthToken: Grants permission to delete an OAuth token from a connected third-party OAuth provider. Only used in the AWS CodeBuild c
+    DeleteWebhook: Grants permission to delete webhook. For an existing AWS CodeBuild build project that has its source code stored in a Gi
+    ImportSourceCredentials: Grants permission to import the source repository credentials for an AWS CodeBuild project that has its source code stor
+    PersistOAuthToken: Grants permission to save an OAuth token from a connected third-party OAuth provider. Only used in the AWS CodeBuild con
+    StartCommandExecution: Grants permission to start running a command execution
+    UpdateWebhook: Grants permission to update the webhook associated with an AWS CodeBuild build project
+
+  [codecatalyst] (10 actions)
+    AcceptConnection: Grants permission to accept a request to connect this account to an Amazon CodeCatalyst space
+    AssociateIdentityCenterApplicationToSpace: Grants permission to associate an IAM Identity Center application with an Amazon CodeCatalyst space
+    AssociateIdentityToIdentityCenterApplication: Grants permission to associate an identity with an IAM Identity Center application for an Amazon CodeCatalyst space
+    CreateSpace: Grants permission to create an Amazon CodeCatalyst space
+    CreateSpaceAdminRoleAssignment: Grants permission to create an administrator role assignment for a given Amazon CodeCatalyst space and IAM Identity Cent
+    DisassociateIdentityCenterApplicationFromSpace: Grants permission to disassociate an IAM Identity Center application from an Amazon CodeCatalyst space
+    DisassociateIdentityFromIdentityCenterApplication: Grants permission to disassociate an identity from an IAM Identity Center application for an Amazon CodeCatalyst space
+    RejectConnection: Grants permission to reject a request to connect this account to an Amazon CodeCatalyst space
+    TagResource: Grants permission to tag an Amazon CodeCatalyst resource
+    UntagResource: Grants permission to untag an Amazon CodeCatalyst resource
+
+  [codecommit] (29 actions)
+    AssociateApprovalRuleTemplateWithRepository: Grants permission to associate an approval rule template with a repository
+    CancelUploadArchive: Grants permission to cancel the uploading of an archive to a pipeline in AWS CodePipeline
+    CreateApprovalRuleTemplate: Grants permission to create an approval rule template that will automatically create approval rules in pull requests tha
+    CreateBranch: Grants permission to create a branch in an AWS CodeCommit repository with this API; does not control Git create branch a
+    CreateCommit: Grants permission to add, copy, move or update single or multiple files in a branch in an AWS CodeCommit repository, and
+    CreatePullRequestApprovalRule: Grants permission to create an approval rule specific to an individual pull request; does not grant permission to create
+    CreateRepository: Grants permission to create an AWS CodeCommit repository
+    DeleteApprovalRuleTemplate: Grants permission to delete an approval rule template
+    DeleteBranch: Grants permission to delete a branch in an AWS CodeCommit repository with this API; does not control Git delete branch a
+    DeletePullRequestApprovalRule: Grants permission to delete approval rule created for a pull request if the rule was not created by an approval rule tem
+    DeleteRepository: Grants permission to delete an AWS CodeCommit repository
+    DisassociateApprovalRuleTemplateFromRepository: Grants permission to remove the association between an approval rule template and a repository
+    GitPull: Grants permission to pull information from an AWS CodeCommit repository to a local repo
+    GitPush: Grants permission to push information from a local repo to an AWS CodeCommit repository
+    OverridePullRequestApprovalRules: Grants permission to override all approval rules for a pull request, including approval rules created by a template
+    ... and 14 more
+
+  [codeconnections] (4 actions)
+    CreateSyncConfiguration: Grants permission to create a template sync config
+    PassConnection: Grants permission to pass a Connection resource to an AWS service that accepts a Connection ARN as input, such as codepi
+    PassRepository: Grants permission to pass a repository link resource to an AWS service that accepts a RepositoryLinkId as input, such as
+    UpdateConnectionInstallation: Grants permission to update a Connection resource with an installation of the CodeStar Connections App
+
+  [codedeploy] (1 actions)
+    PutLifecycleEventHookExecutionStatus: Grants permission to notify a lifecycle event hook execution status for associated deployment with the IAM user
+
+  [codedeploy-commands-secure] (3 actions)
+    PollHostCommand: Grants permission to request host agent commands
+    PutHostCommandAcknowledgement: Grants permission to mark host agent commands acknowledged
+    PutHostCommandComplete: Grants permission to mark host agent commands completed
+
+  [codeguru-reviewer] (4 actions)
+    AssociateRepository: Grants permission to associates a repository with Amazon CodeGuru Reviewer
+    CreateCodeReview: Grants permission to create a code review
+    DisassociateRepository: Grants permission to disassociate a repository with Amazon CodeGuru Reviewer
+    PutRecommendationFeedback: Grants permission to put feedback for a recommendation on a code review
+
+  [codeguru-security] (3 actions)
+    CreateScan: Grants permission to create a CodeGuru Security scan
+    CreateUploadUrl: Grants permission to generate a presigned url for uploading code archives
+    DeleteScansByCategory: Grants permission to delete all the scans and related findings from CodeGuru Security by given category
+
+  [codepipeline] (20 actions)
+    CreateCustomActionType: Grants permission to create a custom action that you can use in the pipelines associated with your AWS account
+    CreatePipeline: Grants permission to create a uniquely named pipeline
+    DeletePipeline: Grants permission to delete a specified pipeline
+    DisableStageTransition: Grants permission to prevent revisions from transitioning to the next stage in a pipeline
+    EnableStageTransition: Grants permission to allow revisions to transition to the next stage in a pipeline
+    OverrideStageCondition: Grants permission to resume the pipeline execution by overriding a condition in a stage
+    PollForJobs: Grants permission to view information about any jobs for CodePipeline to act on
+    PutActionRevision: Grants permission to edit actions in a pipeline
+    PutApprovalResult: Grants permission to provide a response (Approved or Rejected) to a manual approval request in CodePipeline
+    PutJobFailureResult: Grants permission to represent the failure of a job as returned to the pipeline by a job worker (custom actions only)
+    PutJobSuccessResult: Grants permission to represent the success of a job as returned to the pipeline by a job worker (custom actions only)
+    PutThirdPartyJobFailureResult: Grants permission to represent the failure of a third-party job as returned to the pipeline by a job worker (partner act
+    PutThirdPartyJobSuccessResult: Grants permission to represent the success of a third-party job as returned to the pipeline by a job worker (partner act
+    RetryStageExecution: Grants permission to resume the pipeline execution by retrying the last failed actions in a stage
+    RollbackStage: Grants permission to rollback the stage to a previous successful execution
+    ... and 5 more
+
+  [codestar] (7 actions)
+    AssociateTeamMember: Grants permission to add a user to the team for an AWS CodeStar project
+    DeleteUserProfile: Grants permission to delete a user profile in AWS CodeStar, including all personal preference data associated with that 
+    TagProject: Grants permission to add tags to a project in CodeStar
+    UntagProject: Grants permission to remove tags from a project in CodeStar
+    UpdateProject: Grants permission to update a project in CodeStar
+    UpdateTeamMember: Grants permission to update team member attributes within a CodeStar project
+    VerifyServiceRole: Grants permission to verify whether the AWS CodeStar service role exists in the customer's account
+
+  [codestar-connections] (4 actions)
+    CreateSyncConfiguration: Grants permission to create a template sync config
+    PassConnection: Grants permission to pass a Connection resource to an AWS service that accepts a Connection ARN as input, such as codepi
+    PassRepository: Grants permission to pass a repository link resource to an AWS service that accepts a RepositoryLinkId as input, such as
+    UpdateConnectionInstallation: Grants permission to update a Connection resource with an installation of the CodeStar Connections App
+
+  [codewhisperer] (12 actions)
+    AllowVendedLogDeliveryForResource: Grants permission to configure vended log delivery for CodeWhisperer customization resource
+    AssociateCustomizationPermission: Grants permission to invoke AssociateCustomizationPermission on CodeWhisperer
+    CreateCustomization: Grants permission to invoke CreateCustomization on CodeWhisperer
+    CreateProfile: Grants permission to invoke CreateProfile on CodeWhisperer
+    DeleteCustomization: Grants permission to invoke DeleteCustomization on CodeWhisperer
+    DeleteProfile: Grants permission to invoke DeleteProfile on CodeWhisperer
+    DisassociateCustomizationPermission: Grants permission to invoke DisassociateCustomizationPermission on CodeWhisperer
+    GenerateRecommendations: Grants permission to invoke GenerateRecommendations on CodeWhisperer
+    TagResource: Grants permission to invoke TagResource on CodeWhisperer
+    UntagResource: Grants permission to invoke UntagResource on CodeWhisperer
+    UpdateCustomization: Grants permission to invoke UpdateCustomization on CodeWhisperer
+    UpdateProfile: Grants permission to invoke UpdateProfile on CodeWhisperer
+
+  [cognito-idp] (6 actions)
+    AdminConfirmSignUp: Grants permission to confirm any user's registration without a confirmation code
+    AssociateSoftwareToken: Grants permission to return a unique generated shared secret key code for the user
+    ConfirmForgotPassword: Grants permission to allow a user to enter a confirmation code to reset a forgotten password
+    ForgotPassword: Grants permission to send a message to the end user with a confirmation code that is required to change the user's passw
+    VerifySoftwareToken: Grants permission to register a user's entered TOTP code and mark the user's software token MFA status as verified if su
+    VerifyUserAttribute: Grants permission to verify a user attribute using a one time verification code
+
+  [cognito-sync] (1 actions)
+    SetCognitoEvents: Grants permission to set the AWS Lambda function for a given event type for an identity pool
+
+  [comprehendmedical] (2 actions)
+    InferICD10CM: Grants permission to detect the medical condition entities within the given text document and link them to ICD-10-CM cod
+    InferSNOMEDCT: Grants permission to detect the medical condition, anatomy, and test, treatment, and procedure entities within the given
+
+  [compute-optimizer] (1 actions)
+    ExportLambdaFunctionRecommendations: Grants permission to export Lambda function recommendations to S3 for the provided accounts
+
+  [config] (3 actions)
+    PutEvaluations: Grants permission to be used by an AWS Lambda function to deliver evaluation results to AWS Config
+    SelectAggregateResourceConfig: Grants permission to accept a structured query language (SQL) SELECT command and an aggregator to query configuration st
+    SelectResourceConfig: Grants permission to accept a structured query language (SQL) SELECT command, performs the corresponding search, and ret
+
+  [connect] (11 actions)
+    AdminGetEmergencyAccessToken: Grants permission to federate into an Amazon Connect instance (Log in for emergency access functionality in the Amazon C
+    AssociateLambdaFunction: Grants permission to associate a Lambda function for an existing Amazon Connect instance
+    CreateTaskTemplate: Grants permission to create a task template in an Amazon Connect instance
+    DeleteTaskTemplate: Grants permission to delete a task template in an Amazon Connect instance
+    DisassociateLambdaFunction: Grants permission to disassociate a Lambda function for an existing Amazon Connect instance
+    UpdateContactFlowName: Grants permission to update the name and description of a contact flow in an Amazon Connect instance
+    UpdatePrompt: Grants permission to update a prompt's name, description, and Amazon S3 URI in an Amazon Connect instance
+    UpdateQueueName: Grants permission to update a queue name and description in an Amazon Connect instance
+    UpdateQuickConnectName: Grants permission to update a quick connect name and description in an Amazon Connect instance
+    UpdateRoutingProfileName: Grants permission to update a routing profile name and description in an Amazon Connect instance
+    UpdateTaskTemplate: Grants permission to update task template belonging to a Amazon Connect instance
+
+  [cur] (3 actions)
+    DeleteReportDefinition: Grants permission to delete Cost and Usage Report Definition
+    ModifyReportDefinition: Grants permission to modify Cost and Usage Report Definition
+    PutReportDefinition: Grants permission to write Cost and Usage Report Definition
+
+  [datapipeline] (12 actions)
+    ActivatePipeline: Grants permission to validate the specified pipeline and starts processing pipeline tasks. If the pipeline does not pass
+    AddTags: Grants permission to add or modify tags for the specified pipeline
+    CreatePipeline: Grants permission to create a new, empty pipeline
+    DeactivatePipeline: Grants permission to Deactivate the specified running pipeline
+    DeletePipeline: Grants permission to delete a pipeline, its pipeline definition, and its run history
+    PollForTask: Grants permission to task runners to call PollForTask, to receive a task to perform from AWS Data Pipeline
+    PutPipelineDefinition: Grants permission to add tasks, schedules, and preconditions to the specified pipeline
+    QueryObjects: Grants permission to query the specified pipeline for the names of objects that match the specified set of conditions
+    RemoveTags: Grants permission to remove existing tags from the specified pipeline
+    SetStatus: Grants permission to requests that the status of the specified physical or logical pipeline objects be updated in the sp
+    SetTaskStatus: Grants permission to task runners to call SetTaskStatus to notify AWS Data Pipeline that a task is completed and provide
+    ValidatePipelineDefinition: Grants permission to validate the specified pipeline definition to ensure that it is well formed and can be run without 
+
+  [datasync] (3 actions)
+    CancelTaskExecution: Grants permission to cancel execution of a sync task
+    CreateLocationAzureBlob: Grants permission to create an endpoint for a Microsoft Azure Blob Storage container
+    UpdateTaskExecution: Grants permission to update execution of a sync task
+
+  [datazone] (21 actions)
+    AcceptSubscriptionRequest: Grants permission to approve a subscription request for a Data Asset
+    CancelSubscription: Grants permission to revoke or unsubscribe an approved subscription to Data Asset
+    CreateEnvironmentProfile: Grants permission to create a template from a Blueprint that can be used to create a Environment
+    CreateNotebook: Grants permission to create notebooks
+    CreateSubscriptionGrant: Grants permission to create a grant for an approved subscription on a subscription target
+    CreateSubscriptionRequest: Grants permission to create a subscription request for a Data Asset
+    CreateSubscriptionTarget: Grants permission to create a subscription target for a Environment in the project
+    DeleteNotebook: Grants permission to delete notebooks
+    DeleteSubscriptionGrant: Grants permission to delete a subscription grant from a subscription target
+    DeleteSubscriptionRequest: Grants permission to delete a pending subscription request for a Data Asset
+    DeleteSubscriptionTarget: Grants permission to delete a subscription target from a Environment in the project
+    GenerateCode: Grants permission to generate code
+    RejectSubscriptionRequest: Grants permission to reject a subscription request for a Data Asset
+    RevokeSubscription: Grants permission to revoke a subscription
+    StartAccountBootstrapAction: Grants permission to start account bootstrap action for a domain
+    ... and 6 more
+
+  [dbqms] (1 actions)
+    UpdateFavoriteQuery: Grants permission to update saved query and description
+
+  [deadline] (3 actions)
+    CopyJobTemplate: Grants permission to copy a job template to an Amazon S3 bucket
+    SearchSteps: Grants permission to search the steps within a single job or to search the steps for multiple queues
+    UpdateStep: Grants permission to update a step for a job
+
+  [detective] (1 actions)
+    InvokeAssistant: Grants permission to invoke Detective's Assistant
+
+  [discovery] (1 actions)
+    CreateApplication: Grants permission to CreateApplication API. CreateApplication creates an application with the given name and description
+
+  [dlm] (3 actions)
+    CreateLifecyclePolicy: Grants permission to create a data lifecycle policy to manage the scheduled creation and retention of Amazon EBS snapsho
+    DeleteLifecyclePolicy: Grants permission to delete an existing data lifecycle policy. In addition, this action halts the creation and deletion 
+    UpdateLifecyclePolicy: Grants permission to update an existing data lifecycle policy
+
+  [dms] (5 actions)
+    CreateEventSubscription: Grants permission to create an AWS DMS event notification subscription
+    DeleteEventSubscription: Grants permission to delete an AWS DMS event subscription
+    ModifyEventSubscription: Grants permission to modify an existing AWS DMS event notification subscription
+    ModifyFleetAdvisorCollector: Grants permission to modify the name and description of the specified Fleet Advisor collector
+    StartMetadataModelExportAsScripts: Grants permission to start a new export of metadata model as script
+
+  [drs] (7 actions)
+    CreateLaunchConfigurationTemplate: Grants permission to create launch configuration template
+    CreateReplicationConfigurationTemplate: Grants permission to create replication configuration template
+    DeleteLaunchConfigurationTemplate: Grants permission to delete launch configuration template
+    DeleteReplicationConfigurationTemplate: Grants permission to delete replication configuration template
+    ExportSourceNetworkCfnTemplate: Grants permission to export CloudFormation template which contains source network resources
+    SendChannelCommandResultForDrs: Grants permission to send channel command result
+    UpdateReplicationConfigurationTemplate: Grants permission to update replication configuration template
+
+  [ds] (2 actions)
+    CreateLogSubscription: Grants permission to create a subscription to forward real time Directory Service domain controller security logs to the
+    DeleteLogSubscription: Grants permission to delete the specified log subscription
+
+  [ec2] (12 actions)
+    ConfirmProductInstance: Grants permission to determine whether an owned product code is associated with an instance
+    CreateFleet: Grants permission to launch an EC2 Fleet. Resource-level permissions for this action do not include the resources specif
+    CreateIpamScope: Grants permission to create an Amazon VPC IP Address Manager (IPAM) scope, which is the highest-level container within I
+    CreateLaunchTemplate: Grants permission to create a launch template
+    CreateLaunchTemplateVersion: Grants permission to create a new version of a launch template
+    DeleteLaunchTemplate: Grants permission to delete a launch template and its associated versions
+    DeleteLaunchTemplateVersions: Grants permission to delete one or more versions of a launch template
+    DisableAwsNetworkPerformanceMetricSubscription: Grants permission to disable infrastructure performance metric subscriptions
+    EnableAwsNetworkPerformanceMetricSubscription: Grants permission to enable infrastructure performance subscriptions
+    ModifyLaunchTemplate: Grants permission to modify a launch template
+    UpdateSecurityGroupRuleDescriptionsEgress: Grants permission to update descriptions for one or more outbound rules in a VPC security group
+    UpdateSecurityGroupRuleDescriptionsIngress: Grants permission to update descriptions for one or more inbound rules in a security group
+
+  [ecr] (6 actions)
+    CreateRepositoryCreationTemplate: Grants permission to create the repository creation template
+    DeleteLifecyclePolicy: Grants permission to delete the specified lifecycle policy
+    DeleteRepositoryCreationTemplate: Grants permission to delete the repository creation template
+    PutLifecyclePolicy: Grants permission to create or update a lifecycle policy
+    StartLifecyclePolicyPreview: Grants permission to start a preview of the specified lifecycle policy
+    UpdateRepositoryCreationTemplate: Grants permission to update the repository creation template
+
+  [ecs] (13 actions)
+    CreateExpressGatewayService: Grants permission to create a new Amazon ECS Express Gateway service with cluster and task definition
+    CreateService: Grants permission to run and maintain a desired number of tasks from a specified task definition via service creation
+    DeleteTaskDefinitions: Grants permission to delete the specified task definitions by family and revision
+    DeregisterContainerInstance: Grants permission to deregister an Amazon ECS container instance from the specified cluster
+    DeregisterTaskDefinition: Grants permission to deregister the specified task definition by family and revision
+    ExecuteCommand: Grants permission to run a command remotely on an Amazon ECS container
+    Poll: Grants permission to an agent to connect with the Amazon ECS service to report status and get commands
+    PutSystemLogEvents: Grants permission to collect system logs from the container instances
+    RegisterTaskDefinition: Grants permission to register a new task definition from the supplied family and containerDefinitions
+    StartTask: Grants permission to start a new task from the specified task definition on the specified container instance or instance
+    SubmitContainerStateChange: Grants permission to send an acknowledgement that a container changed states
+    UpdateContainerAgent: Grants permission to update the Amazon ECS container agent on a specified container instance
+    UpdateContainerInstancesState: Grants permission to the user to modify the status of an Amazon ECS container instance
+
+  [eks] (3 actions)
+    CreateEksAnywhereSubscription: Grants permission to create an EKS Anywhere subscription
+    DeleteEksAnywhereSubscription: Grants permission to describe an EKS Anywhere subscription
+    UpdateEksAnywhereSubscription: Grants permission to update an EKS Anywhere subscription
+
+  [elasticbeanstalk] (6 actions)
+    CreateConfigurationTemplate: Grants permission to create a configuration template
+    DeleteConfigurationTemplate: Grants permission to delete a configuration template
+    RestartAppServer: Grants permission to request an environment to restart the application container server running on each Amazon EC2 insta
+    UpdateApplicationResourceLifecycle: Grants permission to update the application version lifecycle policy associated with the application
+    UpdateConfigurationTemplate: Grants permission to update a configuration template with specified properties or configuration option values
+    ValidateConfigurationSettings: Grants permission to check the validity of a set of configuration settings for a configuration template or an environmen
+
+  [elasticfilesystem] (1 actions)
+    PutLifecycleConfiguration: Grants permission to enable lifecycle management by creating a new LifecycleConfiguration object
+
+  [elasticmapreduce] (19 actions)
+    AddJobFlowSteps: Grants permission to add new steps to a running cluster
+    AttachEditor: Grants permission to attach an EMR notebook to a compute engine
+    CancelSteps: Grants permission to cancel a pending step or steps in a running cluster
+    CreateEditor: Grants permission to create an EMR notebook
+    CreateRepository: Grants permission to create an EMR notebook repository
+    DeleteEditor: Grants permission to delete an EMR notebook
+    DeleteRepository: Grants permission to delete an EMR notebook repository
+    DetachEditor: Grants permission to detach an EMR notebook from a compute engine
+    LinkRepository: Grants permission to link an EMR notebook repository to EMR notebooks
+    ModifyCluster: Grants permission to change cluster settings such as number of steps that can be executed concurrently for a cluster
+    OpenEditorInConsole: Grants permission to launch the Jupyter notebook editor for an EMR notebook from within the console
+    SetKeepJobFlowAliveWhenNoSteps: Grants permission to add and remove auto terminate after step execution for a cluster
+    StartEditor: Grants permission to start an EMR notebook
+    StartNotebookExecution: Grants permission to start an EMR notebook execution
+    StopEditor: Grants permission to shut down an EMR notebook
+    ... and 4 more
+
+  [elastictranscoder] (7 actions)
+    CancelJob: Cancel a job that Elastic Transcoder has not begun to process
+    CreatePipeline: Create a pipeline
+    DeletePipeline: Delete a pipeline
+    TestRole: Test the settings for a pipeline to ensure that Elastic Transcoder can create and process jobs
+    UpdatePipeline: Update settings for a pipeline
+    UpdatePipelineNotifications: Update only Amazon Simple Notification Service (Amazon SNS) notifications for a pipeline
+    UpdatePipelineStatus: Pause or reactivate a pipeline, so the pipeline stops or restarts processing jobs, update the status for the pipeline
+
+  [elemental-support-cases] (1 actions)
+    CreateS3CLIUploadCommand: Grants permission to create a cli command to allow a file upload to a support case
+
+  [emr-containers] (2 actions)
+    CreateJobTemplate: Grants permission to create a job template
+    DeleteJobTemplate: Grants permission to delete a job template
+
+  [emr-serverless] (2 actions)
+    AccessInteractiveEndpoints: Grants permission to execute interactive workloads on an application
+    AccessLivyEndpoints: Grants permission to execute interactive workloads on Livy Endpoint enabled on an EMR Serverless Application
+
+  [events] (1 actions)
+    InvokeApiDestination: Grants permission to invoke an api destination
+
+  [execute-api] (1 actions)
+    Invoke: Grants permission to invoke an API upon a client request
+
+  [finspace] (1 actions)
+    UpdateKxClusterCodeConfiguration: Grants permission to update code configuration for a cluster in a managed kdb environment
+
+  [fis] (3 actions)
+    CreateExperimentTemplate: Grants permission to create an AWS FIS experiment template
+    DeleteExperimentTemplate: Grants permission to delete the AWS FIS experiment template
+    UpdateExperimentTemplate: Grants permission to update the specified AWS FIS experiment template
+
+  [forecast] (1 actions)
+    InvokeForecastEndpoint: Grants permission to invoke the endpoint to get forecast for a timeseries
+
+  [frauddetector] (4 actions)
+    UpdateDetectorVersion: Grants permission to update a detector version. The detector version attributes that you can update include models, exte
+    UpdateDetectorVersionMetadata: Grants permission to update the detector version's description. You can update the metadata for any detector version (DR
+    UpdateModel: Grants permission to update a model. You can update the description attribute using this action
+    UpdateRuleMetadata: Grants permission to update a rule's metadata. The description attribute can be updated
+
+  [freertos] (2 actions)
+    CreateSubscription: Grants permission to create a subscription for FreeRTOS extended maintenance plan (EMP)
+    UpdateEmailRecipients: Grants permission to update list of subscription email address for FreeRTOS extended maintenance plan (EMP)
+
+  [gamelift] (9 actions)
+    CreateContainerFleet: Grants permission to create a new container fleet of computing resources to run your game servers
+    CreateContainerGroupDefinition: Grants permission to create a new container group definition using images stored in an Amazon ECR repository
+    CreateScript: Grants permission to create a new Realtime Servers script
+    DeleteContainerFleet: Grants permission to delete a container fleet
+    DeleteContainerGroupDefinition: Grants permission to delete a container group definition
+    DeleteScript: Grants permission to delete a Realtime Servers script
+    UpdateContainerFleet: Grants permission to update an existing container fleet
+    UpdateContainerGroupDefinition: Grants permission to update the properties of an existing container group definition
+    UpdateScript: Grants permission to update the metadata and content of an existing Realtime Servers script
+
+  [geo] (2 actions)
+    SearchPlaceIndexForPosition: Grants permission to reverse geocodes a given coordinate
+    SearchPlaceIndexForText: Grants permission to geocode free-form text, such as an address, name, city or region
+
+  [geo-places] (1 actions)
+    Geocode: Grants permission to geocode a textual address or place into geographic coordinates
+
+  [glue] (18 actions)
+    CreateSchema: Grants permission to create a new schema container
+    CreateScript: Grants permission to create a script
+    CreateTableOptimizer: Grants permission to create a new table optimizer for a specific function. Compaction is the only currently supported op
+    CreateUserDefinedFunction: Grants permission to create a function definition
+    DeleteSchema: Grants permission to delete a schema container
+    DeleteUserDefinedFunction: Grants permission to delete a function definition
+    DeregisterDataPreview: Grants permission to terminate Glue Studio Notebook session
+    GlueNotebookAuthorize: Grants permission to access Glue Studio Notebooks
+    GlueNotebookRefreshCredentials: Grants permission to refresh Glue Studio Notebooks credentials
+    RefreshOAuth2Tokens: Grants permission to refresh the oauth2 tokens for connection during job execution
+    RunStatement: Grants permission to run a code or statement in an interactive session
+    SendRecipeAction: Grants permission to execute a Data Preparation Recipe statement in data preview
+    StartNotebook: Grants permission to start Glue Studio Notebooks
+    StopColumnStatisticsTaskRun: Grants permission to stop execution for Column Statistics run
+    TerminateNotebook: Grants permission to terminate Glue Studio Notebooks
+    ... and 3 more
+
+  [greengrass] (31 actions)
+    AssociateRoleToGroup: Grants permission to associate a role with a group. The role's permissions must allow Greengrass core Lambda functions a
+    AssociateServiceRoleToAccount: Grants permission to associate a role with your account. AWS IoT Greengrass uses this role to access your Lambda functio
+    CreateConnectorDefinition: Grants permission to create a connector definition
+    CreateConnectorDefinitionVersion: Grants permission to create a version of an existing connector definition
+    CreateCoreDefinition: Grants permission to create a core definition
+    CreateCoreDefinitionVersion: Grants permission to create a version of an existing core definition. Greengrass groups must each contain exactly one Gr
+    CreateDeviceDefinition: Grants permission to create a device definition
+    CreateDeviceDefinitionVersion: Grants permission to create a version of an existing device definition
+    CreateFunctionDefinition: Grants permission to create a Lambda function definition to be used in a group that contains a list of Lambda functions 
+    CreateFunctionDefinitionVersion: Grants permission to create a version of an existing Lambda function definition
+    CreateLoggerDefinition: Grants permission to create a logger definition
+    CreateLoggerDefinitionVersion: Grants permission to create a version of an existing logger definition
+    CreateResourceDefinition: Grants permission to create a resource definition that contains a list of resources to be used in a group
+    CreateResourceDefinitionVersion: Grants permission to create a version of an existing resource definition
+    CreateSubscriptionDefinition: Grants permission to create a subscription definition
+    ... and 16 more
+
+  [groundtruthlabeling] (1 actions)
+    CreateWorkflowDefinition: Grants permission to create a GT+ Workflow Definition
+
+  [health-agent] (5 actions)
+    ActivateSubscription: Grants permission to activate a subscription to enable billing for a user
+    CreateSubscription: Grants permission to create a new subscription within a domain for billing and user management
+    DeactivateSubscription: Grants permission to deactivate a subscription to stop billing for a user
+    InvokeAgent: Grants permission to invoke an agent within a session with streaming response support
+    StartMedicalScribeListeningSession: Grants permission to start a new Medical Scribe listening session for real-time audio transcription
+
+  [healthlake] (2 actions)
+    LookupCodeSystemWithGet: Grants permission to retrieve Codes for a CodeSystem resource
+    LookupCodeSystemWithPost: Grants permission to retrieve Codes for a CodeSystem resource
+
+  [honeycode] (9 actions)
+    CreateTeam: Grants permission to create a new Amazon Honeycode team for your AWS Account
+    CreateTenant: Grants permission to create a new tenant within Amazon Honeycode for your AWS Account
+    DeleteDomains: Grants permission to delete Amazon Honeycode domains for your AWS Account
+    DeregisterGroups: Grants permission to remove groups from an Amazon Honeycode team for your AWS Account
+    InvokeScreenAutomation: Grants permission to invoke a screen automation
+    RegisterDomainForVerification: Grants permission to request verification of the Amazon Honeycode domains for your AWS Account
+    RegisterGroups: Grants permission to add groups to an Amazon Honeycode team for your AWS Account
+    RestartDomainVerification: Grants permission to restart verification of the Amazon Honeycode domains for your AWS Account
+    UpdateTeam: Grants permission to update an Amazon Honeycode team for your AWS Account
+
+  [iam] (2 actions)
+    UpdateRole: Grants permission to update the description or maximum session duration setting of a role
+    UpdateRoleDescription: Grants permission to update only the description of a role
+
+  [imagebuilder] (12 actions)
+    CancelLifecycleExecution: Grants permission to cancel a lifecycle execution
+    CreateContainerRecipe: Grants permission to create a new Container Recipe
+    CreateImagePipeline: Grants permission to create a new image pipeline
+    CreateLifecyclePolicy: Grants permission to create a new lifecycle policy
+    DeleteContainerRecipe: Grants permission to delete a container recipe
+    DeleteImagePipeline: Grants permission to delete an image pipeline
+    DeleteLifecyclePolicy: Grants permission to delete a lifecycle policy
+    PutContainerRecipePolicy: Grants permission to set the resource policy associated with a container recipe
+    SendWorkflowStepAction: Grants permission to send an action to a workflow step
+    StartImagePipelineExecution: Grants permission to create a new image from a pipeline
+    UpdateImagePipeline: Grants permission to update an existing image pipeline
+    UpdateLifecyclePolicy: Grants permission to update an existing lifecycle policy
+
+  [inspector] (5 actions)
+    CreateAssessmentTemplate: Grants permission to create an assessment template for the assessment target that is specified by the ARN of the assessm
+    CreateExclusionsPreview: Grants permission to start the generation of an exclusions preview for the specified assessment template
+    DeleteAssessmentTemplate: Grants permission to delete the assessment template that is specified by the ARN of the assessment template
+    SetTagsForResource: Grants permission to set tags (key and value pairs) to the assessment template that is specified by the ARN of the asses
+    StartAssessmentRun: Grants permission to start the assessment run specified by the ARN of the assessment template
+
+  [inspector2] (9 actions)
+    CreateCodeSecurityIntegration: Grants permission to create a code security integration with a source code repository provider
+    CreateCodeSecurityScanConfiguration: Grants permission to create a scan configuration for code security scanning
+    DeleteCodeSecurityIntegration: Grants permission to delete a code security integration
+    DeleteCodeSecurityScanConfiguration: Grants permission to delete a code security scan configuration
+    ResetEncryptionKey: Grants permission to let a customer reset to use an Amazon-owned KMS key to encrypt code snippets with
+    StartCodeSecurityScan: Grants permission to initiate a code security scan on a specified repository
+    UpdateCodeSecurityIntegration: Grants permission to update an existing code security integration
+    UpdateCodeSecurityScanConfiguration: Grants permission to update an existing code security scan configuration
+    UpdateEncryptionKey: Grants permission to let a customer use a KMS key to encrypt code snippets with
+
+  [iot] (19 actions)
+    CancelJobExecution: Grants permission to cancel a job execution on a particular device
+    CreateCommand: Grants permission to create a command that can be used to start new executions against a device
+    CreateJobTemplate: Grants permission to create a job template
+    CreateProvisioningTemplate: Grants permission to create a fleet provisioning template
+    CreateProvisioningTemplateVersion: Grants permission to create a new version of a fleet provisioning template
+    DeleteCommand: Grants permission to delete a command
+    DeleteCommandExecution: Grants permission to delete a command execution
+    DeleteJob: Grants permission to delete a job and its related job executions
+    DeleteJobExecution: Grants permission to delete a job execution
+    DeleteJobTemplate: Grants permission to delete a job template
+    DeleteProvisioningTemplate: Grants permission to delete a fleet provisioning template
+    DeleteProvisioningTemplateVersion: Grants permission to delete a fleet provisioning template version
+    DeleteRegistrationCode: Grants permission to delete a CA certificate registration code
+    StartCommandExecution: Grants permission to start a new command execution
+    TestInvokeAuthorizer: Grants permission to test invoke the specified custom authorizer for testing purposes
+    ... and 4 more
+
+  [iotanalytics] (7 actions)
+    CancelPipelineReprocessing: Cancels reprocessing for the specified pipeline
+    CreateDatasetContent: Generates content from the specified dataset (by executing the dataset actions)
+    CreatePipeline: Creates a pipeline
+    DeletePipeline: Deletes the specified pipeline
+    RunPipelineActivity: Runs the specified pipeline activity
+    StartPipelineReprocessing: Starts reprocessing for the specified pipeline
+    UpdatePipeline: Updates the specified pipeline
+
+  [iotdeviceadvisor] (3 actions)
+    CreateSuiteDefinition: Grants permission to create a suite definition
+    DeleteSuiteDefinition: Grants permission to delete a suite definition
+    UpdateSuiteDefinition: Grants permission to update a suite definition
+
+  [iotfleetwise] (12 actions)
+    CreateDecoderManifest: Grants permission to create a decoder manifest for an existing model
+    CreateModelManifest: Grants permission to create a model manifest definition
+    CreateStateTemplate: Grants permission to create a state template
+    DeleteDecoderManifest: Grants permission to delete the given decoder manifest
+    DeleteStateTemplate: Grants permission to delete a state template
+    GenerateCommandPayload: Grants permission to generate the payload for running a command on a vehicle
+    ImportDecoderManifest: Grants permission to import an existing decoder manifest
+    ImportSignalCatalog: Grants permission to create a signal catalog by importing existing definitions
+    UpdateDecoderManifest: Grants permission to update a decoder manifest defnition
+    UpdateModelManifest: Grants permission to update the given model manifest definition
+    UpdateSignalCatalog: Grants permission to update a specific signal catalog definition
+    UpdateStateTemplate: Grants permission to update the given state template
+
+  [iotjobsdata] (2 actions)
+    StartNextPendingJobExecution: Grants permission to get and start the next pending job execution for a thing
+    UpdateJobExecution: Grants permission to update a job execution
+
+  [iotmanagedintegrations] (1 actions)
+    SendManagedThingCommand: Grants permission to send a command to a managed thing
+
+  [iotsitewise] (3 actions)
+    ExecuteAction: Grants permission to execute actions
+    ExecuteQuery: Grants permission to execute query
+    InvokeAssistant: Grants permission to invoke an assistant
+
+  [iottwinmaker] (1 actions)
+    ExecuteQuery: Grants permission to execute query
+
+  [iotwireless] (2 actions)
+    CreateWirelessGatewayTaskDefinition: Grants permission to create a WirelessGateway task definition
+    DeleteWirelessGatewayTaskDefinition: Grants permission to delete a WirelessGateway task definition
+
+  [ivs] (2 actions)
+    CreateEncoderConfiguration: Grants permission to create a new encoder configuration
+    DeleteEncoderConfiguration: Grants permission to delete an encoder configuration for the specified ARN
+
+  [kendra-ranking] (3 actions)
+    CreateRescoreExecutionPlan: Grants permission to create a RescoreExecutionPlan
+    DeleteRescoreExecutionPlan: Grants permission to delete a RescoreExecutionPlan
+    UpdateRescoreExecutionPlan: Grants permission to update a RescoreExecutionPlan
+
+  [kms] (4 actions)
+    GenerateMac: Controls permission to use the AWS KMS key to generate message authentication codes
+    RotateKeyOnDemand: Controls permission to invoke on-demand rotation of the cryptographic material in an AWS KMS key
+    UpdateKeyDescription: Controls permission to delete or change the description of an AWS KMS key
+    VerifyMac: Controls permission to use the AWS KMS key to verify message authentication codes
+
+  [lambda] (42 actions)
+    AddPermission: Grants permission to give an AWS service or another account permission to use an AWS Lambda function
+    CheckpointDurableExecution: Grants permission to save the progress of an AWS Lambda durable execution
+    CreateAlias: Grants permission to create an alias for a Lambda function version
+    CreateCodeSigningConfig: Grants permission to create an AWS Lambda code signing config
+    CreateEventSourceMapping: Grants permission to create a mapping between an event source and an AWS Lambda function
+    CreateFunction: Grants permission to create an AWS Lambda function
+    CreateFunctionUrlConfig: Grants permission to create a function url configuration for a Lambda function
+    DeleteAlias: Grants permission to delete an AWS Lambda function alias
+    DeleteCodeSigningConfig: Grants permission to delete an AWS Lambda code signing config
+    DeleteFunction: Grants permission to delete an AWS Lambda function
+    DeleteFunctionCodeSigningConfig: Grants permission to detach a code signing config from an AWS Lambda function
+    DeleteFunctionConcurrency: Grants permission to remove a concurrent execution limit from an AWS Lambda function
+    DeleteFunctionEventInvokeConfig: Grants permission to delete the configuration for asynchronous invocation for an AWS Lambda function, version, or alias
+    DeleteFunctionUrlConfig: Grants permission to delete function url configuration for a Lambda function
+    DeleteProvisionedConcurrencyConfig: Grants permission to delete the provisioned concurrency configuration for an AWS Lambda function
+    ... and 27 more
+
+  [lex] (2 actions)
+    SearchAssociatedTranscripts: Grants permission to search for associated transcripts that meet the specified criteria
+    StartTestExecution: Grants permission to start a test execution using a test set
+
+  [license-manager-linux-subscriptions] (3 actions)
+    DeregisterSubscriptionProvider: Grants permission to permanently delete a subscription provider in AWS License Manager
+    RegisterSubscriptionProvider: Grants permission to create a new subscription provider in AWS License Manager
+    UpdateServiceSettings: Grants permission to update the service settings for Linux subscriptions in AWS License Manager
+
+  [license-manager-user-subscriptions] (6 actions)
+    AssociateUser: Grants permission to associate a subscribed user to an instance launched with license manager user subscriptions product
+    DeregisterIdentityProvider: Grants permission to deregister Microsoft Active Directory with license-manager-user-subscriptions for a product
+    DisassociateUser: Grants permission to disassociate a subscribed user from an instance launched with license manager user subscriptions pr
+    RegisterIdentityProvider: Grants permission to registers Microsoft Active Directory with license-manager-user-subscriptions for a product
+    StartProductSubscription: Grants permission to start product subscription for a user on a registered active directory for a product
+    StopProductSubscription: Grants permission to stop product subscription for a user on a registered active directory for a product
+
+  [lightsail] (6 actions)
+    CreateContainerService: Grants permission to create an Amazon Lightsail container service
+    CreateContainerServiceDeployment: Grants permission to create a deployment for your Amazon Lightsail container service
+    DeleteContainerImage: Grants permission to delete a container image that is registered to your Amazon Lightsail container service
+    DeleteContainerService: Grants permission to delete your Amazon Lightsail container service
+    RegisterContainerImage: Grants permission to register a container image to your Amazon Lightsail container service
+    UpdateContainerService: Grants permission to update the configuration of your Amazon Lightsail container service, such as its power, scale, and 
+
+  [logs] (7 actions)
+    DeletePipelineRule: Grants permission to delete telemetry pipeline
+    DeleteQueryDefinition: Grants permission to delete a saved CloudWatch Logs Insights query definition
+    DeleteSubscriptionFilter: Grants permission to delete a subscription filter associated with the specified log group
+    ProcessWithPipeline: Grants permission to process and transform log events through pipeline transformers before storage
+    PutPipelineRule: Grants permission to create telemetry pipeline
+    PutQueryDefinition: Grants permission to create or update a query definition
+    PutSubscriptionFilter: Grants permission to create or update a subscription filter and associates it with the specified log group
+
+  [lookoutvision] (1 actions)
+    DetectAnomalies: Grants permission to invoke detection of anomalies
+
+  [m2] (1 actions)
+    CancelBatchJobExecution: Grants permission to cancel the execution of a batch job
+
+  [macie2] (1 actions)
+    UpdateSensitivityInspectionTemplate: Grants permission to update the sensitivity inspection template settings for an account
+
+  [managedblockchain] (4 actions)
+    InvokeRpcBitcoinMainnet: Grants permission to invoke the Bitcoin Mainnet RPCs
+    InvokeRpcBitcoinTestnet: Grants permission to invoke the Bitcoin Testnet RPCs
+    InvokeRpcPolygonMainnet: Grants permission to invoke the Polygon Mainnet RPCs
+    InvokeRpcPolygonMumbaiTestnet: Grants permission to invoke the Polygon Mumbai Testnet RPCs
+
+  [mediaconvert] (5 actions)
+    CreateJobTemplate: Grants permission to create an AWS Elemental MediaConvert custom job template
+    DeleteJobTemplate: Grants permission to delete an AWS Elemental MediaConvert custom job template
+    TagResource: Grants permission to add tags to a MediaConvert queue, preset, or job template
+    UntagResource: Grants permission to remove tags from a MediaConvert queue, preset, or job template
+    UpdateJobTemplate: Grants permission to update an AWS Elemental MediaConvert custom job template
+
+  [medialive] (16 actions)
+    CreateCloudWatchAlarmTemplate: Grants permission to create a cloudwatch alarm template
+    CreateCloudWatchAlarmTemplateGroup: Grants permission to create a cloudwatch alarm template group
+    CreateEventBridgeRuleTemplate: Grants permission to create a eventbridge rule template
+    CreateEventBridgeRuleTemplateGroup: Grants permission to create a eventbridge rule template group
+    CreateNodeRegistrationScript: Grants permission to create a node registration script
+    CreateTags: Grants permission to create tags for channels, inputs, input security groups, multiplexes, reservations, nodes, networks
+    DeleteCloudWatchAlarmTemplate: Grants permission to delete a cloudwatch alarm template
+    DeleteCloudWatchAlarmTemplateGroup: Grants permission to delete a cloudwatch alarm template group
+    DeleteEventBridgeRuleTemplate: Grants permission to delete a eventbridge rule template
+    DeleteEventBridgeRuleTemplateGroup: Grants permission to delete a eventbridge rule template group
+    DeleteTags: Grants permission to delete tags from channels, inputs, input security groups, multiplexes, reservations, nodes, cluster
+    RestartChannelPipelines: Grants permission to restart pipelines on a running channel
+    UpdateCloudWatchAlarmTemplate: Grants permission to update a cloudwatch alarm template
+    UpdateCloudWatchAlarmTemplateGroup: Grants permission to update a cloudwatch alarm template group
+    UpdateEventBridgeRuleTemplate: Grants permission to update a eventbridge rule template
+    ... and 1 more
+
+  [mediastore] (14 actions)
+    CreateContainer: Grants permission to create a container
+    DeleteContainer: Grants permission to delete a container
+    DeleteContainerPolicy: Grants permission to delete the access policy of a container
+    DeleteCorsPolicy: Grants permission to delete the CORS policy from a container
+    DeleteLifecyclePolicy: Grants permission to delete the lifecycle policy from a container
+    DeleteMetricPolicy: Grants permission to delete the metric policy from a container
+    PutContainerPolicy: Grants permission to create or replace the access policy of a container
+    PutCorsPolicy: Grants permission to add or modify the CORS policy of a container
+    PutLifecyclePolicy: Grants permission to add or modify the lifecycle policy that is assigned to a container
+    PutMetricPolicy: Grants permission to add or modify the metric policy that is assigned to a container
+    StartAccessLogging: Grants permission to start access logging on a container
+    StopAccessLogging: Grants permission to stop access logging on a container
+    TagResource: Grants permission to add tags to a container
+    UntagResource: Grants permission to remove tags from a container
+
+  [mgn] (13 actions)
+    CreateLaunchConfigurationTemplate: Grants permission to create launch configuration template
+    CreateNetworkMigrationDefinition: Grants permission to create a network migration definition
+    CreateReplicationConfigurationTemplate: Grants permission to create replication configuration template
+    DeleteLaunchConfigurationTemplate: Grants permission to delete launch configuration template
+    DeleteNetworkMigrationDefinition: Grants permission to delete a network migration definition
+    DeleteReplicationConfigurationTemplate: Grants permission to delete replication configuration template
+    PutTemplateAction: Grants permission to put launch configuration template action document
+    RemoveTemplateAction: Grants permission to remove launch configuration template action document
+    SendChannelCommandResultForMgn: Grants permission to send channel command result
+    SendVcenterClientCommandResultForMgn: Grants permission to send vcenter client command result
+    StartNetworkMigrationCodeGeneration: Grants permission to start network migration code generation
+    UpdateNetworkMigrationDefinition: Grants permission to update a network migration definition
+    UpdateReplicationConfigurationTemplate: Grants permission to update replication configuration template
+
+  [migrationhub-orchestrator] (11 actions)
+    CreateTemplate: Grants permission to create a custom template
+    CreateWorkflow: Grants permission to create a workflow based on the selected template
+    CreateWorkflowStep: Grants permission to create a step under a workflow and a specific step group
+    CreateWorkflowStepGroup: Grants permission to to create a custom step group for a given workflow
+    DeleteTemplate: Grants permission to delete a custom template
+    DeleteWorkflowStep: Grants permission to delete a step from a specific step group under a workflow
+    DeleteWorkflowStepGroup: Grants permission to delete a step group associated with a workflow
+    RetryWorkflowStep: Grants permission to retry a failed step within a workflow
+    UpdateTemplate: Grants permission to update a custom template
+    UpdateWorkflowStep: Grants permission to update metadata and status of a custom step within a workflow
+    UpdateWorkflowStepGroup: Grants permission to update metadata associated with a step group in a given workflow
+
+  [mobiletargeting] (19 actions)
+    CreateEmailTemplate: Grants permission to create an email template
+    CreateExportJob: Grants permission to create an export job that exports endpoint definitions to Amazon S3
+    CreateImportJob: Grants permission to import endpoint definitions from to create a segment
+    CreateInAppTemplate: Grants permission to create an in-app message template
+    CreatePushTemplate: Grants permission to create a push notification template
+    CreateSmsTemplate: Grants permission to create an sms message template
+    CreateVoiceTemplate: Grants permission to create a voice message template
+    DeleteEmailTemplate: Grants permission to delete an email template or an email template version
+    DeleteInAppTemplate: Grants permission to delete an in-app message template or an in-app message template version
+    DeletePushTemplate: Grants permission to delete a push notification template or a push notification template version
+    DeleteSmsTemplate: Grants permission to delete an sms message template or an sms message template version
+    DeleteVoiceTemplate: Grants permission to delete a voice message template or a voice message template version
+    SendOTPMessage: Grants permission to send an OTP code to a user of your application
+    UpdateEmailTemplate: Grants permission to update a specific email template under the same version or generate a new version
+    UpdateInAppTemplate: Grants permission to update a specific in-app message template under the same version or generate a new version
+    ... and 4 more
+
+  [network-firewall] (1 actions)
+    UpdateFirewallDescription: Grants permission to modify the description for a firewall
+
+  [notifications-contacts] (1 actions)
+    ActivateEmailContact: Grants permission to activate the email contact associated with the given ARN if the provided code is valid
+
+  [nova-act] (4 actions)
+    CreateWorkflowDefinition: Grants permission to create a new workflow definition template that can be used to execute multiple workflow runs
+    CreateWorkflowRun: Grants permission to create a new execution instance of a workflow definition with specified parameters
+    DeleteWorkflowDefinition: Grants permission to delete a workflow definition and all associated resources
+    InvokeActStep: Grants permission to execute the next step of an act, processing tool call results and returning new tool calls if neede
+
+  [observabilityadmin] (5 actions)
+    CreateTelemetryPipeline: Grants permission to create a new telemetry pipeline with the specified name and configuration
+    DeleteTelemetryPipeline: Grants permission to delete the telemetry pipeline with the specified arn
+    TestTelemetryPipeline: Grants permission to Test a telemetry pipeline configuration with sample data
+    UpdateTelemetryPipeline: Grants permission to Update the telemetry pipeline with the specified arn
+    ValidateTelemetryPipelineConfiguration: Grants permission to Validate a telemetry pipeline configuration
+
+  [odb] (1 actions)
+    AcceptMarketplaceRegistration: Grants permission to register the Amazon Web Services Marketplace token for your Amazon Web Services account to activate
+
+  [omics] (2 actions)
+    CreateWorkflow: Grants permission to create a new workflow with a workflow definition and template of workflow parameters
+    CreateWorkflowVersion: Grants permission to create a new workflow version with a workflow definition and template of workflow parameters
+
+  [one] (4 actions)
+    CreateDeviceActivationQrCode: Grants permission to create a QR code for a Device Instance
+    CreateDeviceConfigurationTemplate: Grants permission to create a Device Configuration Template
+    DeleteDeviceConfigurationTemplate: Grants permission to delete a Device Configuration Template
+    UpdateDeviceConfigurationTemplate: Grants permission to update a Device Configuration Template
+
+  [opsworks] (1 actions)
+    CreateDeployment: Grants permission to run deployment or stack commands
+
+  [organizations] (1 actions)
+    UpdatePolicy: Grants permission to update an existing policy with a new name, description, or content
+
+  [osis] (12 actions)
+    CreatePipeline: Grants permission to create an OpenSearch Ingestion pipeline
+    CreatePipelineEndpoint: Grants permission to create an OpenSearch Ingestion pipeline endpoint
+    DeletePipeline: Grants permission to delete an OpenSearch Ingestion pipeline
+    DeletePipelineEndpoint: Grants permission to delete an OpenSearch Ingestion pipeline endpoint in the current account
+    Ingest: Grants permission to ingest data through an OpenSearch Ingestion pipeline
+    RevokePipelineEndpointConnections: Grants permission to revoke an OpenSearch Ingestion pipeline endpoint connection from a pipeline in the current account
+    StartPipeline: Grants permission to start an OpenSearch Ingestion pipeline
+    StopPipeline: Grants permission to stop an OpenSearch Ingestion pipeline
+    TagResource: Grants permission to attach resource tags to an OpenSearch Ingestion pipeline
+    UntagResource: Grants permission to remove resource tags from an OpenSearch Ingestion Service pipeline
+    UpdatePipeline: Grants permission to modify the configuration of an OpenSearch Ingestion pipeline
+    ValidatePipeline: Grants permission to validate the configuration of an OpenSearch Ingestion pipeline
+
+  [partnercentral] (1 actions)
+    SendEmailVerificationCode: Grants permission to send email verification codes in AWS Partner Central
+
+  [payment-cryptography] (5 actions)
+    GenerateCardValidationData: Grants permission to generate card-related data using algorithms such as Card Verification Values (CVV/CVV2), Dynamic Ca
+    GenerateMac: Grants permission to generate a MAC (Message Authentication Code) cryptogram
+    GenerateMacEmvPinChange: Grants permission to generate a MAC (Message Authentication Code) cryptogram
+    VerifyCardValidationData: Grants permission to verify card-related validation data using algorithms such as Card Verification Values (CVV/CVV2), D
+    VerifyMac: Grants permission to verify MAC (Message Authentication Code) of input data against a provided MAC
+
+  [pca-connector-ad] (6 actions)
+    CreateTemplate: Grants permission to create a Template for a Connector
+    CreateTemplateGroupAccessControlEntry: Grants permission to create a TemplateGroupAccessControlEntry for a Template
+    DeleteTemplate: Grants permission to delete a Template for a Connector
+    DeleteTemplateGroupAccessControlEntry: Grants permission to delete a TemplateGroupAccessControlEntry for a Template
+    UpdateTemplate: Grants permission to update a Template for a Connector
+    UpdateTemplateGroupAccessControlEntry: Grants permission to update a TemplateGroupAccessControlEntry for a Template
+
+  [pricingplanmanager] (6 actions)
+    AssociateResourcesToSubscription: Grants permission to associate resources with a subscription
+    CancelSubscription: Grants permission to cancel a subscription
+    CancelSubscriptionChange: Grants permission to cancel a pending a change for a subscription
+    CreateSubscription: Grants permission to create a subscription
+    DisassociateResourcesFromSubscription: Grants permission to disassociate resources from a subscription
+    UpdateSubscription: Grants permission to update a subscription
+
+  [profile] (5 actions)
+    CreateCalculatedAttributeDefinition: Grants permission to create a calculated attribute definition in the domain
+    CreateSegmentDefinition: Grants permission to create a segment definition in the domain
+    DeleteCalculatedAttributeDefinition: Grants permission to delete a calculated attribute definition in the domain
+    DeleteSegmentDefinition: Grants permission to delete a segment definition in the domain
+    UpdateCalculatedAttributeDefinition: Grants permission to update a calculated attribute definition in the domain
+
+  [proton] (29 actions)
+    CancelServicePipelineDeployment: Grants permission to cancel a service pipeline deployment
+    CreateEnvironmentTemplate: Grants permission to create an environment template
+    CreateEnvironmentTemplateMajorVersion: Grants permission to create an environment template major version. DEPRECATED - use CreateEnvironmentTemplateVersion ins
+    CreateEnvironmentTemplateMinorVersion: Grants permission to create an environment template minor version. DEPRECATED - use CreateEnvironmentTemplateVersion ins
+    CreateEnvironmentTemplateVersion: Grants permission to create an environment template version
+    CreateServiceTemplate: Grants permission to create a service template
+    CreateServiceTemplateMajorVersion: Grants permission to create a service template major version. DEPRECATED - use CreateServiceTemplateVersion instead
+    CreateServiceTemplateMinorVersion: Grants permission to create a service template minor version. DEPRECATED - use CreateServiceTemplateVersion instead
+    CreateServiceTemplateVersion: Grants permission to create a service template version
+    CreateTemplateSyncConfig: Grants permission to create a template sync config
+    DeleteEnvironmentTemplate: Grants permission to delete an environment template
+    DeleteEnvironmentTemplateMajorVersion: Grants permission to delete an environment template major version. DEPRECATED - use DeleteEnvironmentTemplateVersion ins
+    DeleteEnvironmentTemplateMinorVersion: Grants permission to delete an environment template minor version. DEPRECATED - use DeleteEnvironmentTemplateVersion ins
+    DeleteEnvironmentTemplateVersion: Grants permission to delete an environment template version
+    DeleteServiceTemplate: Grants permission to delete a service template
+    ... and 14 more
+
+  [q] (3 actions)
+    GenerateCodeFromCommands: Grants permission to generate code from CLI commands in Amazon Q
+    GenerateCodeRecommendations: Grants permission to generate code recommendations in Amazon Q
+    UpdateTroubleshootingCommandResult: Grants permission to update a troubleshooting command result with Amazon Q
+
+  [qbusiness] (3 actions)
+    CancelSubscription: Grants permission to cancel a subscription
+    CreateSubscription: Grants permission to create a subscription
+    UpdateSubscription: Grants permission to update a subscription
+
+  [qdeveloper] (1 actions)
+    TransformCode: Grants permission to transform code with Amazon Q Developer Transform Agent
+
+  [qldb] (3 actions)
+    ExecuteStatement: Grants permission to send commands to a ledger via the console
+    PartiQLHistoryFunction: Grants permission to use the history function on a table
+    SendCommand: Grants permission to send commands to a ledger
+
+  [quicksight] (14 actions)
+    CreateAnalysis: Grants permission to create an analysis from a template
+    CreateEmailCustomizationTemplate: Grants permission to create a QuickSight email customization template
+    CreateTemplate: Grants permission to create a template
+    CreateTemplateAlias: Grants permission to create a template alias
+    DeleteEmailCustomizationTemplate: Grants permission to delete a QuickSight email customization template
+    DeleteTemplate: Grants permission to delete a template
+    DeleteTemplateAlias: Grants permission to delete a template alias
+    PassDataSet: Grants permission to use a dataset for a template
+    Subscribe: Grants permission to subscribe to Amazon QuickSight, and also to allow the user to upgrade the subscription to Enterpris
+    UpdateEmailCustomizationTemplate: Grants permission to update a QuickSight email customization template
+    UpdateGroup: Grants permission to change group description
+    UpdateTemplate: Grants permission to update a template
+    UpdateTemplateAlias: Grants permission to update a template alias
+    UpdateTemplatePermissions: Grants permission to update permissions for a template
+
+  [rds] (6 actions)
+    AddSourceIdentifierToSubscription: Grants permission to add a source identifier to an existing RDS event notification subscription
+    CreateEventSubscription: Grants permission to create an RDS event notification subscription
+    CrossRegionCommunication: Grants permission to access a resource in the remote Region when executing cross-Region operations, such as cross-Region
+    DeleteEventSubscription: Grants permission to delete an RDS event notification subscription
+    ModifyEventSubscription: Grants permission to modify an existing RDS event notification subscription
+    RemoveSourceIdentifierFromSubscription: Grants permission to remove a source identifier from an existing RDS event notification subscription
+
+  [rds-data] (1 actions)
+    ExecuteSql: Grants permission to run one or more SQL statements. This operation is deprecated. Use the BatchExecuteStatement or Exec
+
+  [redshift] (4 actions)
+    CreateEventSubscription: Grants permission to create an Amazon Redshift event notification subscription
+    DeleteEventSubscription: Grants permission to delete an Amazon Redshift event notification subscription
+    ExecuteQuery: Grants permission to execute a query through the Amazon Redshift console
+    ModifyEventSubscription: Grants permission to modify an existing Amazon Redshift event notification subscription
+
+  [redshift-data] (1 actions)
+    ExecuteStatement: Grants permission to execute a query
+
+  [resiliencehub] (3 actions)
+    CreateRecommendationTemplate: Grants permission to create recommendation template
+    DeleteRecommendationTemplate: Grants permission to batch delete recommendation template
+    PutDraftAppVersionTemplate: Grants permission to put draft application version template
+
+  [resource-groups] (1 actions)
+    CreateGroup: Grants permission to create a resource group with a specified name, description, and resource query
+
+  [robomaker] (3 actions)
+    CreateWorldTemplate: Create a world template
+    DeleteWorldTemplate: Delete a world template
+    UpdateWorldTemplate: Update a world template
+
+  [route53domains] (1 actions)
+    RetrieveDomainAuthCode: Grants permission to get the AuthCode for the domain
+
+  [rum] (1 actions)
+    UpdateRumMetricDefinition: Grants permission to update rum metric definition
+
+  [s3] (1 actions)
+    PutLifecycleConfiguration: Grants permission to create a new lifecycle configuration for the bucket or replace an existing lifecycle configuration
+
+  [s3-outposts] (1 actions)
+    PutLifecycleConfiguration: Grants permission to create a new lifecycle configuration for the bucket or replace an existing lifecycle configuration
+
+  [s3express] (1 actions)
+    PutLifecycleConfiguration: Grants permission to create a new lifecycle configuration for the directory bucket or replace an existing lifecycle conf
+
+  [sagemaker] (40 actions)
+    CallMlflowAppApi: Grants permission to invoke MLflow APIs
+    CreateCodeRepository: Grants permission to create a CodeRepository
+    CreateDataQualityJobDefinition: Grants permission to create a data quality job definition
+    CreateFlowDefinition: Grants permission to create a flow definition, which defines settings for a human workflow
+    CreateModel: Grants permission to create a model in Amazon SageMaker. In the request, you specify a name for the model and describe o
+    CreateModelBiasJobDefinition: Grants permission to create a model bias job definition
+    CreateModelExplainabilityJobDefinition: Grants permission to create a model explainability job definition
+    CreateModelQualityJobDefinition: Grants permission to create a model quality job definition
+    CreateNotebookInstance: Grants permission to create an Amazon SageMaker notebook instance. A notebook instance is an Amazon EC2 instance running
+    CreateNotebookInstanceLifecycleConfig: Grants permission to create a notebook instance lifecycle configuration that can be deployed using Amazon SageMaker
+    CreatePipeline: Grants permission to create a pipeline
+    CreatePresignedNotebookInstanceUrl: Grants permission to create a URL that you can use from your browser to connect to the Notebook Instance
+    CreateStudioLifecycleConfig: Grants permission to create a Studio Lifecycle Configuration that can be deployed using Amazon SageMaker
+    DeleteCodeRepository: Grants permission to delete a CodeRepository
+    DeleteDataQualityJobDefinition: Grants permission to delete the data quality job definition created using the CreateDataQualityJobDefinition API
+    ... and 25 more
+
+  [schemas] (1 actions)
+    PutCodeBinding: Grants permission to generate code for specific schema in your account
+
+  [sdb] (1 actions)
+    Select: Description for Select
+
+  [securityagent] (5 actions)
+    StartCodeRemediation: Grants permission to start code remediation for the findings
+    StartPentestExecution: Grants permission to initiate the execution of a penetration test
+    StartPentestJob: Grants permission to initiate the execution of a penetration test
+    StopPentestExecution: Grants permission to stop the execution of a running penetration test
+    StopPentestJob: Grants permission to stop the execution of a running penetration test
+
+  [securityhub] (1 actions)
+    ConnectorRegistrationsV2: Grants permission to complete the OAuth 2.0 authorization code flow based on input parameters
+
+  [securitylake] (1 actions)
+    UpdateDataLakeExceptionSubscription: Grants permission to update subscriptions to the SNS topics for exception notifications
+
+  [serverlessrepo] (1 actions)
+    CreateCloudFormationTemplate: Grants permission to create an AWS CloudFormation template
+
+  [servicecatalog] (5 actions)
+    ExecuteProvisionedProductPlan: Grants permission to execute a provisioned product plan
+    ExecuteProvisionedProductServiceAction: Grants permission to executes a provisioned product plan
+    NotifyProvisionProductEngineWorkflowResult: Grants permission to notify the result of the provisioning engine execution
+    NotifyTerminateProvisionedProductEngineWorkflowResult: Grants permission to notify the result of the terminate engine execution
+    NotifyUpdateProvisionedProductEngineWorkflowResult: Grants permission to notify the result of the update engine execution
+
+  [servicequotas] (4 actions)
+    AssociateServiceQuotaTemplate: Grants permission to associate the Service Quotas template with your organization
+    DeleteServiceQuotaIncreaseRequestFromTemplate: Grants permission to remove the specified service quota from the service quota template
+    DisassociateServiceQuotaTemplate: Grants permission to disassociate the Service Quotas template from your organization
+    PutServiceQuotaIncreaseRequestIntoTemplate: Grants permission to define and add a quota to the service quota template
+
+  [ses] (14 actions)
+    CreateAddonSubscription: Grants permission to create an addon subscription
+    CreateCustomVerificationEmailTemplate: Grants permission to create a new custom verification email template
+    CreateEmailTemplate: Grants permission to create an email template
+    CreateTemplate: Grants permission to creates an email template
+    DeleteAddonSubscription: Grants permission to delete an addon subscription
+    DeleteCustomVerificationEmailTemplate: Grants permission to delete an existing custom verification email template
+    DeleteEmailTemplate: Grants permission to delete an email template
+    DeleteTemplate: Grants permission to delete an email template
+    SendTemplatedEmail: Grants permission to compose an email message using an email template
+    TestRenderEmailTemplate: Grants permission to create a preview of the MIME content of an email when provided with a template and a set of replace
+    TestRenderTemplate: Grants permission to create a preview of the MIME content of an email when provided with a template and a set of replace
+    UpdateCustomVerificationEmailTemplate: Grants permission to update an existing custom verification email template
+    UpdateEmailTemplate: Grants permission to update an email template
+    UpdateTemplate: Grants permission to update an email template
+
+  [shield] (3 actions)
+    CreateSubscription: Grants permission to activate subscription
+    DeleteSubscription: Grants permission to deactivate subscription
+    UpdateSubscription: Grants permission to update the details of an existing subscription
+
+  [signer] (1 actions)
+    StartSigningJob: Grants permission to initiate a Signing Job on the provided code
+
+  [signin] (2 actions)
+    AuthorizeOAuth2Access: Grants permission to authenticate through a browser and obtain an OAuth 2.0 authorization code for credential exchange
+    CreateOAuth2Token: Grants permission to exchange an authorization code for OAuth 2.0 access token and refresh token that can be used to acc
+
+  [sms] (2 actions)
+    GenerateTemplate: Grants permission to generate a CloudFormation template for an existing application
+    NotifyAppValidationOutput: Grants permission to send notification for application validation script
+
+  [sms-voice] (1 actions)
+    SendDestinationNumberVerificationCode: Grants permission to send a text or voice message containing a verification code to a destination phone number
+
+  [sns] (3 actions)
+    DeleteTopic: Grants permission to delete a topic and all its subscriptions
+    SetSubscriptionAttributes: Grants permission to allow a subscription owner to set an attribute of the topic to a new value
+    Unsubscribe: Grants permission to delete a subscription
+
+  [social-messaging] (5 actions)
+    CreateWhatsAppMessageTemplate: Grants permission to create a WhatsApp message template
+    CreateWhatsAppMessageTemplateFromLibrary: Grants permission to create a WhatsApp message template from Meta's template library
+    CreateWhatsAppMessageTemplateMedia: Grants permission to create media for WhatsApp message templates
+    DeleteWhatsAppMessageTemplate: Grants permission to delete a WhatsApp message template
+    UpdateWhatsAppMessageTemplate: Grants permission to update a WhatsApp message template
+
+  [sqlworkbench] (16 actions)
+    AssociateNotebookWithTab: Grants permission to associate notebook to a tab
+    CreateNotebook: Grants permission to create a new notebook on your account
+    CreateNotebookCell: Grants permission to create a notebook cell on your account
+    CreateNotebookFromVersion: Grants permission to create a new notebook from a notebook version on your account
+    CreateNotebookVersion: Grants permission to create a notebook version on your account
+    DeleteNotebook: Grants permission to remove notebooks on your account
+    DeleteNotebookCell: Grants permission to remove notebooks cells on your account
+    DeleteNotebookVersion: Grants permission to remove notebooks cells on your account
+    DriverExecute: Grants permission to execute a query in your redshift cluster
+    DuplicateNotebook: Grants permission to create a new notebook by duplicating an existing one on your account
+    ExportNotebook: Grants permission to export a notebook on your account
+    ImportNotebook: Grants permission to import a notebook on your account
+    RestoreNotebookVersion: Grants permission to restore a notebook on your account to a version
+    UpdateNotebook: Grants permission to update a notebook metadata on your account
+    UpdateNotebookCellContent: Grants permission to update a notebook cell content on your account
+    ... and 1 more
+
+  [ssm] (8 actions)
+    CancelCommand: Grants permission to cancel a specified Run Command command
+    CancelMaintenanceWindowExecution: Grants permission to cancel an in-progress maintenance window execution
+    CreateAssociationBatch: Grants permission to combine entries for multiple CreateAssociation operations in a single command
+    SendAutomationSignal: Grants permission to send a signal to change the current behavior or status of a specified Automation execution
+    SendCommand: Grants permission to run commands on one or more specified managed instances
+    StartAutomationExecution: Grants permission to initiate the execution of an Automation document
+    StartChangeRequestExecution: Grants permission to initiate the execution of an Automation Change Template document
+    StopAutomationExecution: Grants permission to stop a specified Automation execution that is already in progress
+
+  [ssm-contacts] (1 actions)
+    SendActivationCode: Grants permission to send the activation code of a contact's contact channel
+
+  [ssm-quicksetup] (1 actions)
+    UpdateConfigurationDefinition: Grants permission to update a Quick Setup configuration definition
+
+  [states] (10 actions)
+    InvokeHTTPEndpoint: Grants permission to invoke the HTTP Task state
+    RedriveExecution: Grants permission to redrive an execution
+    RevealSecrets: Grants permission to reveal sensitive data from an execution
+    StartExecution: Grants permission to start a state machine execution
+    StartSyncExecution: Grants permission to start a Synchronous Express state machine execution
+    StopExecution: Grants permission to stop an execution
+    TagResource: Grants permission to tag an AWS Step Functions resource
+    TestState: Grants permission to test a state machine definition
+    UntagResource: Grants permission to remove a tag from an AWS Step Functions resource
+    ValidateStateMachineDefinition: Grants permission to validate a state machine definition
+
+  [storagegateway] (2 actions)
+    CreateTapeWithBarcode: Grants permission to create a virtual tape by using your own barcode
+    DisableGateway: Grants permission to disable a gateway when the gateway is no longer functioning
+
+  [sts] (1 actions)
+    DecodeAuthorizationMessage: Grants permission to decode additional information about the authorization status of a request from an encoded message r
+
+  [support] (5 actions)
+    InitiateCallForCase: Grants permission to initiate a call on AWS Support Center. This is an internally managed function
+    InitiateChatForCase: Grants permission to initiate a chat on AWS Support Center.This is an internally managed function
+    InitiateLiveContactForCase: Grants permission to initiate a live contact on AWS Support Center. This is an internally managed function
+    PutCaseAttributes: Grants permission to allow secondary services to attach attributes to AWS Support cases. This is an internally managed f
+    UpdateCaseSeverity: Grants permission to update the severity for a single AWS Support case. This is an internally managed function
+
+  [supportapp] (1 actions)
+    RedeemSlackOauthCode: Grants permission to redeem the Slack OAuth code, which the AWS Support App uses to authorize the workspace
+
+  [swf] (14 actions)
+    CancelWorkflowExecution: Grants permission to close the workflow execution and record a WorkflowExecutionCanceled event in the history
+    CompleteWorkflowExecution: Grants permission to close the workflow execution and record a WorkflowExecutionCompleted event in the history
+    ContinueAsNewWorkflowExecution: Grants permission to close the workflow execution and start a new workflow execution of the same type using the same wor
+    CountClosedWorkflowExecutions: Grants permission to return the number of closed workflow executions within the given domain that meet the specified fil
+    CountOpenWorkflowExecutions: Grants permission to return the number of open workflow executions within the given domain that meet the specified filte
+    FailWorkflowExecution: Grants permission to close the workflow execution and record a WorkflowExecutionFailed event in the history
+    RequestCancelExternalWorkflowExecution: Grants permission to request that a request be made to cancel the specified external workflow execution
+    RequestCancelWorkflowExecution: Grants permission to record a WorkflowExecutionCancelRequested event in the currently running workflow execution identif
+    SignalExternalWorkflowExecution: Grants permission to request a signal to be delivered to the specified external workflow execution and records
+    SignalWorkflowExecution: Grants permission to record a WorkflowExecutionSignaled event in the workflow execution history and create a decision ta
+    StartChildWorkflowExecution: Grants permission to request that a child workflow execution be started
+    StartTimer: Grants permission to start a timer for a workflow execution
+    StartWorkflowExecution: Grants permission to start an execution of the workflow type in the specified domain using the provided workflowId and i
+    TerminateWorkflowExecution: Grants permission to record a WorkflowExecutionTerminated event and force closure of the workflow execution identified b
+
+  [synthetics] (2 actions)
+    DeleteCanary: Grants permission to delete a canary. Amazon Synthetics deletes all the resources except for the Lambda function and the
+    StartCanaryDryRun: Grants permission to start a canary dry run, so that Amazon CloudWatch Synthetics can execute a test execution of a cana
+
+  [timestream] (1 actions)
+    ExecuteScheduledQuery: Grants permission to execute a scheduled query in your account
+
+  [tnb] (5 actions)
+    CreateSolFunctionPackage: Grants permission to create a function package
+    DeleteSolFunctionPackage: Grants permission to delete a function package
+    PutSolFunctionPackageContent: Grants permission to upload function package content
+    UpdateSolFunctionPackage: Grants permission to update a function package
+    ValidateSolFunctionPackageContent: Grants permission to validate function package content
+
+  [transcribe] (11 actions)
+    CreateMedicalVocabulary: Grants permission to create a new custom vocabulary that you can use to change the way Amazon Transcribe Medical handles
+    CreateVocabulary: Grants permission to create a new custom vocabulary that you can use to change the way Amazon Transcribe handles transcr
+    CreateVocabularyFilter: Grants permission to create a new vocabulary filter that you can use to filter out words from the transcription of an au
+    DeleteCallAnalyticsJob: Grants permission to delete a previously submitted call analytics job along with any other generated results such as the
+    DeleteMedicalTranscriptionJob: Grants permission to delete a previously submitted medical transcription job
+    DeleteTranscriptionJob: Grants permission to delete a previously submitted transcription job along with any other generated results such as the 
+    StartCallAnalyticsStreamTranscription: Grants permission to start a protocol where audio is streamed to Transcribe Call Analytics and the transcription results
+    StartCallAnalyticsStreamTranscriptionWebSocket: Grants permission to start a WebSocket where audio is streamed to Transcribe Call Analytics and the transcription result
+    StartMedicalScribeStream: Grants permission to start a bidirectional HTTP2 stream where audio is streamed to AWS HealthScribe and the transcriptio
+    StartMedicalStreamTranscription: Grants permission to start a protocol where audio is streamed to Transcribe Medical and the transcription results are st
+    StartMedicalStreamTranscriptionWebSocket: Grants permission to start a WebSocket where audio is streamed to Transcribe Medical and the transcription results are s
+
+  [transfer] (1 actions)
+    SendWorkflowStepState: Grants permission to send a callback for asynchronous custom steps
+
+  [transform] (12 actions)
+    AssociateConnectorResource: Grants permission to invoke AssociateConnectorResource on AWS Transform
+    CreateProfile: Grants permission to invoke CreateProfile on AWS Transform
+    DeleteAgentRuntimeConfiguration: Grants permission to invoke DeleteAgentRuntimeConfiguration on AWS Transform
+    DeleteConnector: Grants permission to invoke DeleteConnector on AWS Transform
+    DeleteProfile: Grants permission to invoke DeleteProfile on AWS Transform
+    PutAgentRuntimeConfiguration: Grants permission to invoke PutAgentRuntimeConfiguration on AWS Transform
+    RejectConnector: Grants permission to invoke RejectConnector on AWS Transform
+    TagResource: Grants permission to invoke TagResource on AWS Transform
+    UntagResource: Grants permission to invoke UntagResource on AWS Transform
+    UpdateAccountSettings: Grants permission to invoke UpdateAccountSettings on AWS Transform
+    UpdateAgentAccess: Grants permission to invoke UpdateAgentAccess on AWS Transform
+    UpdateProfile: Grants permission to invoke UpdateProfile on AWS Transform
+
+  [transform-custom] (14 actions)
+    CompleteTransformationPackageUpload: Grants permission to invoke CompleteTransformationPackageUpload on AWS Transform custom
+    ConverseStream: Grants permission to invoke ConverseStream on AWS Transform custom
+    CreateCampaign: Grants permission to invoke CreateCampaign on AWS Transform custom
+    CreateTransformationPackageUrl: Grants permission to invoke CreateTransformationPackageUrl on AWS Transform custom
+    DeleteCampaign: Grants permission to invoke DeleteCampaign on AWS Transform custom
+    DeleteKnowledgeItem: Grants permission to invoke DeleteKnowledgeItem on AWS Transform custom
+    DeleteTransformationPackage: Grants permission to invoke DeleteTransformationPackage on AWS Transform custom
+    ExecuteTransformation: Grants permission to invoke ExecuteTransformation on AWS Transform custom
+    TagResource: Grants permission to invoke TagResource on AWS Transform custom
+    UntagResource: Grants permission to invoke UntagResource on AWS Transform custom
+    UpdateCampaign: Grants permission to invoke UpdateCampaign on AWS Transform custom
+    UpdateCampaignRepositoryStatus: Grants permission to invoke UpdateCampaignRepositories on AWS Transform custom
+    UpdateKnowledgeItemConfiguration: Grants permission to invoke UpdateKnowledgeItemConfiguration on AWS Transform custom
+    UpdateKnowledgeItemStatus: Grants permission to invoke UpdateKnowledgeItemStatus on AWS Transform custom
+
+  [ts] (1 actions)
+    StartExecution: Grants permission to start an execution workflow of specific tool within AWS Diagnostic tools
+
+  [user-subscriptions] (4 actions)
+    CreateClaim: Grants permission to create a User subscription Claim
+    DeleteClaim: Grants permission to delete a User subscription Claim
+    SetOverageConfig: Grants permission to set a User subscription overage configuration
+    UpdateClaim: Grants permission to update a User subscription Claim
+
+  [verifiedpermissions] (3 actions)
+    CreatePolicyTemplate: Grants permission to create a policy template
+    DeletePolicyTemplate: Grants permission to delete the specified policy template from the policy store
+    UpdatePolicyTemplate: Grants permission to update the specified policy template
+
+  [vpc-lattice] (4 actions)
+    AssociateViaAWSService-EventsAndStates: Grants permission to associate a resource configuration through Amazon EventBridge and AWS Step Functions service networ
+    CreateAccessLogSubscription: Grants permission to create an access log subscription
+    DeleteAccessLogSubscription: Grants permission to delete an access log subscription
+    UpdateAccessLogSubscription: Grants permission to update an access log subscription
+
+  [vpc-lattice-svcs] (1 actions)
+    Invoke: Grants permission to invoke a VPC Lattice service
+
+  [waf] (3 actions)
+    CreateWebACLMigrationStack: Grants permission to create a CloudFormation web ACL template in an S3 bucket for the purposes of migrating the web ACL 
+    CreateXssMatchSet: Grants permission to create an XssMatchSet, which you use to detect requests that contain cross-site scripting attacks
+    UpdateIPSet: Grants permission to insert or delete IPSetDescriptor objects in an IPSet
+
+  [waf-regional] (2 actions)
+    CreateWebACLMigrationStack: Grants permission to create a CloudFormation web ACL template in an S3 bucket for the purposes of migrating the web ACL 
+    UpdateIPSet: Grants permission to insert or delete IPSetDescriptor objects in an IPSet
+
+  [wafv2] (1 actions)
+    CreateAPIKey: Grants permission to create an API key for use in the integration of the CAPTCHA API in your JavaScript client applicati
+
+  [wellarchitected] (8 actions)
+    CreateReviewTemplate: Grants permission to create a new review template
+    CreateTemplateShare: Grants permission to an owner of a review template to share with other AWS accounts and IAM users
+    DeleteReviewTemplate: Grants permission to delete an existing review template
+    DeleteTemplateShare: Grants permission to delete an existing review template share
+    UpdateReviewTemplate: Grants permission to update properties of the specified review template
+    UpdateReviewTemplateAnswer: Grants permission to update properties of the specified review template answer
+    UpdateReviewTemplateLensReview: Grants permission to update properties of the specified review template lens review
+    UpgradeReviewTemplateLensReview: Grants permission to upgrade the specified lens review of the specified review template
+
+  [wisdom] (13 actions)
+    ActivateMessageTemplate: Grants permission to activate a message template
+    CreateMessageTemplate: Grants permission to create a message template
+    CreateMessageTemplateAttachment: Grants permission to create an attachment to a message template
+    CreateMessageTemplateVersion: Grants permission to create a version of a message template
+    DeactivateMessageTemplate: Grants permission to deactivate a message template
+    DeleteMessageTemplate: Grants permission to delete a message template
+    DeleteMessageTemplateAttachment: Grants permission to delete an attachment from a message template
+    RemoveKnowledgeBaseTemplateUri: Grants permission to remove a URI template from a knowledge base
+    RenderMessageTemplate: Grants permission to render a message template
+    SearchMessageTemplates: Grants permission to search for message templates referencing a specified knowledge base
+    UpdateKnowledgeBaseTemplateUri: Grants permission to update the template URI of a knowledge base
+    UpdateMessageTemplate: Grants permission to update content of the message template
+    UpdateMessageTemplateMetadata: Grants permission to update metadata of the message template
+
+  [workdocs] (3 actions)
+    AddNotificationPermissions: Grants permission to add principals that are allowed to call notification subscription APIs for a given WorkDocs site
+    DeleteNotificationPermissions: Grants permission to delete principals that are allowed to call notification subscription APIs for a given WorkDocs site
+    DeleteNotificationSubscription: Grants permission to delete the specified subscription from the specified organization
+
+
+====================================================================================================
+PATTERN 3: IAM Policy Manipulation actions
+====================================================================================================
+
+All IAM write actions (potential privesc):
+  iam:AcceptDelegationRequest [Write]: Accepts a delegation request resource, granting the requested temporary access
+  iam:AddClientIDToOpenIDConnectProvider [Permissions management]: Grants permission to add a new client ID (audience) to the list of registered IDs for the specified 
+  iam:AddRoleToInstanceProfile [Permissions management]: Grants permission to add an IAM role to the specified instance profile
+  iam:AddUserToGroup [Permissions management]: Grants permission to add an IAM user to the specified IAM group
+  iam:AssociateDelegationRequest [Write]: Associates a delegation request resource with the calling identity
+  iam:AttachGroupPolicy [Permissions management]: Grants permission to attach a managed policy to the specified IAM group
+  iam:AttachRolePolicy [Permissions management]: Grants permission to attach a managed policy to the specified IAM role
+  iam:AttachUserPolicy [Permissions management]: Grants permission to attach a managed policy to the specified IAM user
+  iam:ChangePassword [Permissions management]: Grants permission to an IAM user to change their own password
+  iam:CreateAccessKey [Permissions management]: Grants permission to create access key and secret access key for the specified IAM user
+  iam:CreateAccountAlias [Permissions management]: Grants permission to create an alias for your AWS account
+  iam:CreateDelegationRequest [Write]: Creates an IAM delegation request resource for temporary access delegation
+  iam:CreateGroup [Permissions management]: Grants permission to create a new group
+  iam:CreateInstanceProfile [Permissions management]: Grants permission to create a new instance profile
+  iam:CreateLoginProfile [Permissions management]: Grants permission to create a password for the specified IAM user
+  iam:CreateOpenIDConnectProvider [Permissions management]: Grants permission to create an IAM resource that describes an identity provider (IdP) that supports 
+  iam:CreatePolicy [Permissions management]: Grants permission to create a new managed policy
+  iam:CreatePolicyVersion [Permissions management]: Grants permission to create a new version of the specified managed policy
+  iam:CreateRole [Permissions management]: Grants permission to create a new role
+  iam:CreateSAMLProvider [Permissions management]: Grants permission to create an IAM resource that describes an identity provider (IdP) that supports 
+  iam:CreateServiceLinkedRole [Permissions management]: Grants permission to create an IAM role that allows an AWS service to perform actions on your behalf
+  iam:CreateServiceSpecificCredential [Permissions management]: Grants permission to create a new service-specific credential for an IAM user
+  iam:CreateUser [Permissions management]: Grants permission to create a new IAM user
+  iam:CreateVirtualMFADevice [Permissions management]: Grants permission to create a new virtual MFA device
+  iam:DeactivateMFADevice [Permissions management]: Grants permission to deactivate the specified MFA device and remove its association with the IAM use
+  iam:DeleteAccessKey [Permissions management]: Grants permission to delete the access key pair that is associated with the specified IAM user
+  iam:DeleteAccountAlias [Permissions management]: Grants permission to delete the specified AWS account alias
+  iam:DeleteAccountPasswordPolicy [Permissions management]: Grants permission to delete the password policy for the AWS account
+  iam:DeleteCloudFrontPublicKey [Write]: Grants permission to delete an existing CloudFront public key
+  iam:DeleteGroup [Permissions management]: Grants permission to delete the specified IAM group
+  iam:DeleteGroupPolicy [Permissions management]: Grants permission to delete the specified inline policy from its group
+  iam:DeleteInstanceProfile [Permissions management]: Grants permission to delete the specified instance profile
+  iam:DeleteLoginProfile [Permissions management]: Grants permission to delete the password for the specified IAM user
+  iam:DeleteOpenIDConnectProvider [Permissions management]: Grants permission to delete an OpenID Connect identity provider (IdP) resource object in IAM
+  iam:DeletePolicy [Permissions management]: Grants permission to delete the specified managed policy and remove it from any IAM entities (users,
+  iam:DeletePolicyVersion [Permissions management]: Grants permission to delete a version from the specified managed policy
+  ia
