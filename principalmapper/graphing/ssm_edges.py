@@ -91,6 +91,7 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                 'ssm:SendCommand',
                 '*',
                 {},
+                service_control_policy_groups=scps
             )
 
             if cmd_auth_res:
@@ -107,6 +108,7 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                 'ssm:StartSession',
                 '*',
                 {},
+                service_control_policy_groups=scps
             )
 
             if sesh_auth_res:

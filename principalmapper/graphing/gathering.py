@@ -98,8 +98,9 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
         policies_result.extend(get_sqs_queue_policies(session, caller_identity['Account'], region_allow_list, region_deny_list, client_args_map))
         policies_result.extend(get_kms_key_policies(session, region_allow_list, region_deny_list, client_args_map))
         policies_result.extend(get_secrets_manager_policies(session, region_allow_list, region_deny_list, client_args_map))
-    except:
-        pass
+    except Exception as ex:
+        logger.warning('Error gathering resource policies. Graph will be created with potentially missing resource policies. Continuing.')
+        logger.debug('Exception was: {}'.format(ex))
 
     return Graph(nodes_result, edges_result, policies_result, groups_result, metadata)
 
@@ -427,12 +428,12 @@ def get_sqs_queue_policies(session: botocore.session.Session, account_id: str,
             for queue_url in queue_urls:
                 queue_name = queue_url.split('/')[-1]
                 sqs_policy_response = sqsclient.get_queue_attributes(QueueUrl=queue_url, AttributeNames=['Policy'])
-                if 'Policy' in sqs_policy_response:
-                    sqs_policy_doc = json.loads(sqs_policy_response['Policy'])
+                if 'Attributes' in sqs_policy_response and 'Policy' in sqs_policy_response['Attributes']:
+                    sqs_policy_doc = json.loads(sqs_policy_response['Attributes']['Policy'])
                     result.append(Policy(
                         'arn:aws:sqs:{}:{}:{}'.format(sqs_region, account_id, queue_name),
                         queue_name,
-                        json.loads(sqs_policy_doc)
+                        sqs_policy_doc
                     ))
                     logger.info('Caching policy for {}'.format('arn:aws:sqs:{}:{}:{}'.format(sqs_region, account_id, queue_name)))
                 else:

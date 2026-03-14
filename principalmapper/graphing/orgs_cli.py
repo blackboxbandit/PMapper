@@ -86,6 +86,10 @@ def process_arguments(parsed_args: Namespace):
     """Given a namespace object generated from parsing args, perform the appropriate tasks. Returns an int
     matching expectations set by /usr/include/sysexits.h for command-line utilities."""
 
+    if parsed_args.picked_orgs_cmd is None:
+        print('Error: No orgs subcommand provided. Please select a subcommand (create, update, display, list).')
+        return 64
+
     # new args for handling AWS Organizations
     if parsed_args.picked_orgs_cmd == 'create':
         logger.debug('Called create subcommand for organizations')
@@ -100,7 +104,7 @@ def process_arguments(parsed_args: Namespace):
 
         # get the botocore session and go to work creating the OrganizationTree obj
         session = botocore_tools.get_session(parsed_args.profile)
-        org_tree = get_organizations_data(session)
+        org_tree: OrganizationTree = get_organizations_data(session)
         logger.info('Generated initial organization data for {}'.format(org_tree.org_id))
 
         # create the account -> OU path map and apply to all accounts (same as orgs update operation)
@@ -141,7 +145,7 @@ def process_arguments(parsed_args: Namespace):
     elif parsed_args.picked_orgs_cmd == 'update':
         # pull the existing data from disk
         org_filepath = os.path.join(get_storage_root(), parsed_args.org)
-        org_tree = OrganizationTree.create_from_dir(org_filepath)
+        org_tree: OrganizationTree = OrganizationTree.create_from_dir(org_filepath)
 
         # create the account -> OU path map and apply to all accounts
         account_ou_map = _map_account_ou_paths(org_tree)
@@ -181,7 +185,7 @@ def process_arguments(parsed_args: Namespace):
     elif parsed_args.picked_orgs_cmd == 'display':
         # pull the existing data from disk
         org_filepath = os.path.join(get_storage_root(), parsed_args.org)
-        org_tree = OrganizationTree.create_from_dir(org_filepath)
+        org_tree: OrganizationTree = OrganizationTree.create_from_dir(org_filepath)
 
         def _print_account(org_account: OrganizationAccount, indent_level: int, inherited_scps: List[Policy]):
             print('{} {}:'.format(' ' * indent_level, org_account.account_id))
@@ -243,10 +247,11 @@ def _update_accounts_with_ou_path_map(org_id: str, account_ou_map: dict, root_di
 
     for account, ou_path in account_ou_map.items():
         potential_path = os.path.join(root_dir, account.account_id, 'metadata.json')
-        if os.path.exists(os.path.join(potential_path)):
+        if os.path.exists(potential_path):
             try:
-                fd = open(potential_path, 'r')
-                metadata = json.load(fd)
+                with open(potential_path, 'r') as fd:
+                    metadata = json.load(fd)
+
                 new_org_data = {
                     'org-id': org_id,
                     'org-path': ou_path
@@ -254,10 +259,9 @@ def _update_accounts_with_ou_path_map(org_id: str, account_ou_map: dict, root_di
                 logger.debug('Updating {} with org data: {}'.format(account.account_id, new_org_data))
                 metadata['org-id'] = org_id
                 metadata['org-path'] = ou_path
-                fd.close()
 
-                fd = open(potential_path, 'w')
-                json.dump(metadata, fd, indent=4)
+                with open(potential_path, 'w') as fd:
+                    json.dump(metadata, fd, indent=4)
             except IOError as ex:
                 logger.debug('IOError when reading/writing metadata of {}: {}'.format(account.account_id, str(ex)))
                 continue

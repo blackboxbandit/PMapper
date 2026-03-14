@@ -5,6 +5,347 @@ PMapper now supports over **180+ AWS Privilege Escalation vectors** natively int
 
 Use the new `--exploit` flag on your `pmapper argquery` or `pmapper analysis` commands to automatically generate the required AWS CLI commands for exploiting identified paths!
 
+> 📖 **Full documentation**: See the [GitHub Wiki](https://github.com/nccgroup/PMapper/wiki) for command-by-command instructions with examples.
+
+---
+
+# ⚡ Quick Start (TL;DR)
+
+Get results in 5 commands:
+
+```bash
+# 1. Install PMapper + Graphviz
+pip install principalmapper
+brew install graphviz          # macOS (or: apt install graphviz on Linux)
+
+# 2. Create the IAM graph for your AWS account
+pmapper --profile my-profile graph create
+
+# 3. Check for privilege escalation paths (skip known admins)
+pmapper --account 123456789012 query -s 'preset privesc *'
+
+# 4. Run full analysis with exploit commands
+pmapper --account 123456789012 analysis --exploit
+
+# 5. Generate a visual map
+pmapper --account 123456789012 visualize --filetype svg
+```
+
+> **Tip**: Replace `my-profile` with your AWS CLI profile name and `123456789012` with your actual account ID. You can find the account ID in the output of step 2.
+
+---
+
+# 📘 Detailed Usage Guide
+
+## Authentication
+
+PMapper uses the same credential resolution as the AWS CLI:
+
+| Method | How to Use |
+|--------|------------|
+| **Named Profile** | `pmapper --profile my-profile <subcommand>` |
+| **Default Profile** | `pmapper <subcommand>` (uses `[default]` in `~/.aws/credentials`) |
+| **Environment Variables** | Set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and optionally `AWS_SESSION_TOKEN` |
+| **EC2 Instance Metadata** | Runs automatically when on an EC2 instance with an attached IAM role |
+
+The `--profile` flag must come **before** the subcommand (e.g., `pmapper --profile prod graph create`).
+
+## Global Flags
+
+| Flag | Description |
+|------|-------------|
+| `--profile PROFILE` | AWS CLI profile to use for API calls |
+| `--account ACCOUNT_ID` | Target a stored graph offline (skips the STS `GetCallerIdentity` call) |
+| `--debug` | Enable verbose debug logging |
+
+---
+
+## Subcommand Overview
+
+| Subcommand | Purpose |
+|------------|---------|
+| `graph` | Create, display, or list IAM graphs |
+| `orgs` | Map AWS Organizations, SCPs, and cross-account edges |
+| `query` | Run human-readable queries (e.g., `'who can do s3:GetObject with arn:aws:s3:::my-bucket/*'`) |
+| `argquery` | Run structured/arg-based queries with fine-grained control |
+| `repl` | Interactive read-eval-print loop for queries |
+| `analysis` | Automated risk analysis with optional exploit generation |
+| `visualize` | Generate SVG/PNG/DOT/GraphML diagrams |
+
+---
+
+## `pmapper graph` — Build & Manage IAM Graphs
+
+### Create a graph
+
+```bash
+# Basic: graph the current account
+pmapper --profile my-profile graph create
+
+# Only scan specific regions
+pmapper --profile my-profile graph create --include-regions us-east-1 eu-west-1
+
+# Exclude specific regions
+pmapper --profile my-profile graph create --exclude-regions cn-north-1 cn-northwest-1
+
+# Only check specific edge services
+pmapper --profile my-profile graph create --include-services iam sts lambda
+
+# Exclude certain edge services
+pmapper --profile my-profile graph create --exclude-services sagemaker autoscaling
+
+# Skip AWS Organizations / SCP checks
+pmapper --profile my-profile graph create --ignore-orgs
+
+# Use LocalStack for testing
+pmapper --profile my-profile graph create --localstack-endpoint http://localhost:4566
+```
+
+**Available edge services**: `autoscaling`, `cloudformation`, `codebuild`, `ec2`, `generic_passrole`, `iam`, `lambda`, `sagemaker`, `ssm`, `sts`
+
+### Display graph info
+```bash
+pmapper --account 123456789012 graph display
+```
+
+### List all stored graphs
+```bash
+pmapper graph list
+```
+
+---
+
+## `pmapper query` — Human-Readable Queries
+
+The `query` subcommand accepts natural-language-style queries:
+
+```bash
+# Who can create IAM users?
+pmapper --account 123456789012 query 'who can do iam:CreateUser'
+
+# Can a specific user perform an action?
+pmapper --account 123456789012 query 'can arn:aws:iam::123456789012:user/attacker do s3:GetObject with arn:aws:s3:::secret-bucket/*'
+
+# Preset: find all privilege escalation paths (skip admins)
+pmapper --account 123456789012 query -s 'preset privesc *'
+
+# Include unauthorized results (show who CANNOT)
+pmapper --account 123456789012 query -u 'who can do iam:CreateUser'
+
+# Include resource policies (S3, IAM, SNS, SQS, KMS)
+pmapper --account 123456789012 query --with-resource-policy 'who can do s3:GetObject with arn:aws:s3:::my-bucket/*'
+
+# Consider SCPs in the query
+pmapper --account 123456789012 query --scps 'who can do iam:CreateUser'
+```
+
+| Flag | Description |
+|------|-------------|
+| `-s`, `--skip-admin` | Omit principals already identified as admin |
+| `-u`, `--include-unauthorized` | Show principals that do NOT have access |
+| `--with-resource-policy` | Auto-fetch the resource policy for the target resource |
+| `--resource-policy-text TEXT` | Provide resource policy JSON inline |
+| `--resource-owner ACCOUNT_ID` | Required for S3 bucket policies (account not in ARN) |
+| `--session-policy TEXT` | Session policy JSON to evaluate |
+| `--scps` | Apply stored SCPs during evaluation |
+
+---
+
+## `pmapper argquery` — Structured Queries
+
+More powerful and scriptable than `query`:
+
+```bash
+# Who can run EC2 instances? (skip admins)
+pmapper --account 123456789012 argquery -s --action 'ec2:RunInstances'
+
+# Check a specific principal against a specific action + resource
+pmapper --account 123456789012 argquery \
+  --principal 'arn:aws:iam::123456789012:user/dev' \
+  --action 's3:GetObject' \
+  --resource 'arn:aws:s3:::prod-data/*'
+
+# Add conditions
+pmapper --account 123456789012 argquery -s \
+  --action 'ec2:RunInstances' \
+  --condition 'ec2:InstanceType=c6gd.16xlarge'
+
+# Run preset queries
+pmapper --account 123456789012 argquery --preset privesc
+
+# Generate exploit commands for identified paths
+pmapper --account 123456789012 argquery -s --preset privesc --exploit
+```
+
+| Flag | Description |
+|------|-------------|
+| `--principal PRINCIPAL` | IAM principal ARN or `*` for all (default: `*`) |
+| `--action ACTION` | AWS API action to test (e.g., `s3:GetObject`) |
+| `--resource RESOURCE` | AWS resource ARN (default: `*`) |
+| `--condition KEY=VALUE` | Condition key-value pairs (can specify multiple) |
+| `--preset PRESET` | Run a preset query (e.g., `privesc`) |
+| `--exploit` | Output AWS CLI commands to exploit identified paths |
+| `-s`, `--skip-admin` | Skip admin-level principals |
+| `-u`, `--include-unauthorized` | Include unauthorized results |
+| `--with-resource-policy` | Auto-fetch resource policy |
+| `--resource-policy-text TEXT` | Inline resource policy JSON |
+| `--resource-owner ACCOUNT_ID` | Resource owner for S3 |
+| `--session-policy TEXT` | Session policy JSON |
+| `--scps` | Apply SCPs |
+
+---
+
+## `pmapper analysis` — Automated Risk Analysis
+
+Runs all built-in risk checks and reports findings:
+
+```bash
+# Text output (default)
+pmapper --account 123456789012 analysis
+
+# JSON output (for pipelines/SIEM)
+pmapper --account 123456789012 analysis --output-type json
+
+# Include exploit commands for each finding
+pmapper --account 123456789012 analysis --exploit
+```
+
+| Flag | Description |
+|------|-------------|
+| `--output-type text\|json` | Output format (default: `text`) |
+| `--exploit` | Include AWS CLI exploit commands in findings |
+
+---
+
+## `pmapper visualize` — Generate Diagrams
+
+```bash
+# SVG diagram (default)
+pmapper --account 123456789012 visualize
+
+# PNG diagram
+pmapper --account 123456789012 visualize --filetype png
+
+# DOT format (for custom rendering)
+pmapper --account 123456789012 visualize --filetype dot
+
+# GraphML format (for graph analysis tools)
+pmapper --account 123456789012 visualize --filetype graphml
+
+# Only show privilege escalation paths
+pmapper --account 123456789012 visualize --only-privesc
+
+# Include AWS services that can assume roles
+pmapper --account 123456789012 visualize --with-services
+```
+
+| Flag | Description |
+|------|-------------|
+| `--filetype svg\|png\|dot\|graphml` | Output format (default: `svg`) |
+| `--only-privesc` | Only show privilege escalation edges |
+| `--with-services` | Include service principals in the visualization |
+
+Output files are created in the current directory as `<account-id>.<filetype>` (or `<account-id>-privesc-risks.<filetype>`).
+
+---
+
+## `pmapper orgs` — AWS Organizations Support
+
+### Create an org tree
+```bash
+# Requires credentials with organizations:Describe* and organizations:List* permissions
+pmapper --profile management-account orgs create
+```
+
+### Update org metadata for existing graphs
+```bash
+pmapper orgs update --org o-abc123def4
+```
+
+### Display org tree structure
+```bash
+pmapper orgs display --org o-abc123def4
+```
+
+### List stored organizations
+```bash
+pmapper orgs list
+```
+
+---
+
+## `pmapper repl` — Interactive Mode
+
+Start an interactive query session (avoids re-reading graph data from disk for each query):
+
+```bash
+pmapper --account 123456789012 repl
+# Then type queries interactively:
+# > who can do iam:CreateUser
+# > can arn:aws:iam::123456789012:user/dev do s3:GetObject with *
+# > preset privesc *
+# > exit
+```
+
+---
+
+## Common Workflows
+
+### 🔍 Full Security Assessment
+
+```bash
+# Step 1: Map the account
+pmapper --profile target graph create
+
+# Step 2: Map the organization (if applicable)
+pmapper --profile management orgs create
+
+# Step 3: Run automated analysis
+pmapper --account 123456789012 analysis --output-type json --exploit > findings.json
+
+# Step 4: Check specific privilege escalation paths
+pmapper --account 123456789012 query -s 'preset privesc *'
+
+# Step 5: Generate visual report
+pmapper --account 123456789012 visualize --filetype svg
+pmapper --account 123456789012 visualize --only-privesc --filetype svg
+```
+
+### 🔄 Multi-Account Assessment
+
+```bash
+# Graph each account
+for profile in dev staging prod; do
+  pmapper --profile $profile graph create
+done
+
+# Map the organization
+pmapper --profile management orgs create
+
+# Run analysis on each
+pmapper graph list  # get account IDs
+for acct in 111111111111 222222222222 333333333333; do
+  pmapper --account $acct analysis --exploit
+done
+```
+
+### 📊 CI/CD Integration
+
+```bash
+# Run analysis and fail on findings (JSON output for parsing)
+pmapper --profile ci graph create
+ACCOUNT_ID=$(pmapper graph list | grep -oP '\d{12}' | head -1)
+pmapper --account $ACCOUNT_ID analysis --output-type json > results.json
+
+# Parse results in your pipeline
+if [ -s results.json ]; then
+  echo "⚠️ IAM risks detected!"
+  exit 1
+fi
+```
+
+---
+
 <details><summary><b>Click here to view the 180+ Privilege Escalation Vectors & MITRE ATT&CK Matrix</b></summary>
 
 # AWS Privilege Escalation Matrix (180+ Vectors)

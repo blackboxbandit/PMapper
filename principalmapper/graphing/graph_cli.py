@@ -22,14 +22,14 @@ import re
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from principalmapper.common import OrganizationTree, OrganizationNode, Graph
-from principalmapper.graphing import graph_actions
-from principalmapper.graphing.cross_account_edges import get_edges_between_graphs
-from principalmapper.graphing.gathering import get_organizations_data
-from principalmapper.graphing.edge_identification import checker_map
-from principalmapper.querying import query_orgs
-from principalmapper.util import botocore_tools
-from principalmapper.util.storage import get_storage_root
+from ..common import OrganizationTree, OrganizationNode, Graph
+from . import graph_actions
+from .cross_account_edges import get_edges_between_graphs
+from .gathering import get_organizations_data
+from .edge_identification import checker_map
+from ..querying import query_orgs
+from ..util import botocore_tools
+from ..util.storage import get_storage_root
 
 
 logger = logging.getLogger(__name__)
@@ -115,6 +115,10 @@ def process_arguments(parsed_args: Namespace):
     """Given a namespace object generated from parsing args, perform the appropriate tasks. Returns an int
     matching expectations set by /usr/include/sysexits.h for command-line utilities."""
 
+    if parsed_args.picked_graph_cmd is None:
+        print('Error: No graph subcommand provided. Please select a subcommand (create, display, list).')
+        return 64
+
     if parsed_args.picked_graph_cmd == 'create':
         logger.debug('Called create subcommand of graph')
 
@@ -152,9 +156,9 @@ def process_arguments(parsed_args: Namespace):
             logger.debug("Caller Identity: {}".format(caller_identity))
 
             org_tree_search_dir = Path(get_storage_root())
-            org_id_pattern = re.compile(r'/o-\w+')
+            org_id_pattern = re.compile(r'^o-\w+$')
             for subdir in org_tree_search_dir.iterdir():
-                if org_id_pattern.search(str(subdir)) is not None:
+                if org_id_pattern.search(subdir.name) is not None:
                     logger.debug('Checking {} to see if account {} is a member'.format(str(subdir), caller_account))
                     org_tree = OrganizationTree.create_from_dir(str(subdir))
                     if caller_account in org_tree.accounts:

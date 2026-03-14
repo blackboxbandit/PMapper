@@ -19,7 +19,7 @@ import os
 import os.path
 from typing import List, Optional, Tuple
 
-from principalmapper.common import Edge
+from principalmapper.common.edges import Edge
 from principalmapper.common.policies import Policy
 
 
@@ -104,11 +104,19 @@ class OrganizationTree(object):
         """Returns a dictionary representation of this OrganizationTree object. Used for serialization to disk. We
         exclude the SCPs and metadata since `save_organization_to_disk` does those in a separate file."""
 
+        # Handle edge_list containing either Edge objects (freshly created) or raw dicts (loaded from disk)
+        serialized_edges = []
+        for x in self.edge_list:
+            if isinstance(x, dict):
+                serialized_edges.append(x)
+            else:
+                serialized_edges.append(x.to_dictionary())
+
         return {
             'org_id': self.org_id,
             'management_account_id': self.management_account_id,
             'root_ous': [x.as_dictionary() for x in self.root_ous],
-            'edge_list': [x.to_dictionary() for x in self.edge_list],
+            'edge_list': serialized_edges,
             'accounts': self.accounts
         }
 

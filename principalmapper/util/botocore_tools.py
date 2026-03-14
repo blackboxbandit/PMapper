@@ -29,11 +29,12 @@ def get_session(profile_arg: Optional[str], stsargs: Optional[dict] = None) -> b
 
     Tries to follow order from: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
     """
+    # get default session which handles Env-vars, etc.
+    result = botocore.session.get_session()
+
     # command-line args (--profile)
     if profile_arg is not None:
-        result = botocore.session.Session(profile=profile_arg)
-    else:  # pull from environment vars / metadata
-        result = botocore.session.get_session()
+        result.set_config_variable('profile', profile_arg)
 
     # handles args for creating the STS client
     if stsargs is None:

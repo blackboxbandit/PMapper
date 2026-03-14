@@ -15,4 +15,5 @@
 *.idea*
 
 # Ignore venv
-/venv*
+/venv*.terraform/
+.terraform.lock.hcl

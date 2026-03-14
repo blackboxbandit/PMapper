@@ -192,7 +192,7 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                         result.append(Edge(
                             node_source,
                             node_destination,
-                            '(MFA Required) can use CodeBuild with an existing project to access' if startproj_mfa else 'can use CodeBuild with an existing project to access',
+                            '(MFA Required) can use CodeBuild with an existing project to access' if batchstartproj_mfa else 'can use CodeBuild with an existing project to access',
                             'CodeBuild'
                         ))
                         break  # break out of iterating through projects
@@ -250,7 +250,7 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                         ))
 
             # check if the source can update a project and start a build
-            for project in codebuild_projects:
+            for project in (codebuild_projects or []):
                 update_proj_auth, update_proj_mfa = query_interface.local_check_authorization_handling_mfa(
                     node_source,
                     'codebuild:UpdateProject',
@@ -270,7 +270,7 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                         result.append(Edge(
                             node_source,
                             node_destination,
-                            '(MFA Required) can update a project in CodeBuild to access' if create_proj_mfa or pass_role_mfa else 'can update a project in CodeBuild to access',
+                            '(MFA Required) can update a project in CodeBuild to access' if update_proj_mfa or pass_role_mfa else 'can update a project in CodeBuild to access',
                             'CodeBuild'
                         ))
                         break  # just wanna find that there exists one updatable/usable project
@@ -286,7 +286,7 @@ def generate_edges_locally(nodes: List[Node], scps: Optional[List[List[dict]]] =
                             result.append(Edge(
                                 node_source,
                                 node_destination,
-                                '(MFA Required) can update a project in CodeBuild to access' if create_proj_mfa or pass_role_mfa else 'can update a project in CodeBuild to access',
+                                '(MFA Required) can update a project in CodeBuild to access' if update_proj_mfa or pass_role_mfa else 'can update a project in CodeBuild to access',
                                 'CodeBuild'
                             ))
                             break  # just wanna find that there exists one updatable/usable project

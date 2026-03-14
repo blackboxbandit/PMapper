@@ -62,14 +62,21 @@ def process_arguments(parsed_args: Namespace):
             print(f'Error: Unable to load graph for account {parsed_args.account} ({e}).')
         return 1
 
-    if parsed_args.only_privesc:
-        filepath = './{}-privesc-risks.{}'.format(graph.metadata['account_id'], parsed_args.filetype)
-        graph_writer.draw_privesc_paths(graph, filepath, parsed_args.filetype)
-    else:
-        # create file
-        filepath = './{}.{}'.format(graph.metadata['account_id'], parsed_args.filetype)
-        graph_writer.handle_request(graph, filepath, parsed_args.filetype, parsed_args.with_services)
-
-    print('Created file {}'.format(filepath))
+    try:
+        if parsed_args.only_privesc:
+            filepath = './{}-privesc-risks.{}'.format(graph.metadata['account_id'], parsed_args.filetype)
+            graph_writer.draw_privesc_paths(graph, filepath, parsed_args.filetype)
+        else:
+            # create file
+            filepath = './{}.{}'.format(graph.metadata['account_id'], parsed_args.filetype)
+            graph_writer.handle_request(graph, filepath, parsed_args.filetype, parsed_args.with_services)
+        print('Created file {}'.format(filepath))
+    except (OSError, Exception) as e:
+        if isinstance(e, OSError) and 'dot' in str(e):
+            print('Error: The "dot" executable (part of Graphviz) was not found. Visualization requires Graphviz.')
+            print('Please install Graphviz (e.g., "brew install graphviz" on macOS or "apt install graphviz" on Linux).')
+        else:
+            print(f'Error: An unexpected error occurred during visualization: {e}')
+        return 1
 
     return 0
