@@ -16,6 +16,8 @@
 #      along with Principal Mapper.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Optional
 
 import botocore.session
@@ -55,12 +57,40 @@ def obtain_edges(session: Optional[botocore.session.Session], checker_list: List
                  region_allow_list: Optional[List[str]] = None, region_deny_list: Optional[List[str]] = None,
                  scps: Optional[List[List[dict]]] = None, client_args_map: Optional[dict] = None) -> List[Edge]:
     """Given a list of nodes and a botocore Session, return a list of edges between those nodes. Only checks
-    against services passed in the checker_list param. """
-    result = []
+    against services passed in the checker_list param. Runs edge checkers concurrently for speed."""
+
     logger.info('Initiating edge checks.')
     logger.debug('Services being checked for edges: {}'.format(checker_list))
+
+    checker_objs = []
     for check in checker_list:
         if check in checker_map:
-            checker_obj = checker_map[check](session)
-            result.extend(checker_obj.return_edges(nodes, region_allow_list, region_deny_list, scps, client_args_map))
+            checker_objs.append((check, checker_map[check](session)))
+
+    def _run_checker(name_and_checker):
+        """Execute a single edge checker and return its edges with timing info."""
+        name, checker_obj = name_and_checker
+        t0 = time.time()
+        logger.info('[Edge Check] Starting: {}'.format(name))
+        edges = checker_obj.return_edges(nodes, region_allow_list, region_deny_list, scps, client_args_map)
+        elapsed = time.time() - t0
+        logger.info('[Edge Check] {} finished: {} edges found in {:.1f}s'.format(name, len(edges), elapsed))
+        return edges
+
+    result = []
+
+    # Run edge checkers concurrently — each checker is independent
+    max_workers = min(len(checker_objs), 5) if checker_objs else 1
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_run_checker, nc): nc[0] for nc in checker_objs}
+        for future in as_completed(futures):
+            service_name = futures[future]
+            try:
+                edges = future.result()
+                result.extend(edges)
+            except Exception as ex:
+                logger.warning('[Edge Check] {} encountered an error: {}. Continuing.'.format(service_name, ex))
+                logger.debug('Exception details:', exc_info=True)
+
+    logger.info('[Edge Check] Total edges identified: {}'.format(len(result)))
     return result

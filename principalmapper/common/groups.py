@@ -27,6 +27,8 @@ class Group(object):
     that the object represents.
     """
 
+    __slots__ = ('arn', 'attached_policies')
+
     def __init__(self, arn: str, attached_policies: Optional[List[Policy]]):
         """Constructor"""
         if arn is None or not arns.get_resource(arn).startswith('group/'):

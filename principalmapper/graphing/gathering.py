@@ -19,6 +19,8 @@ import io
 import json
 import logging
 import os
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import botocore.session
 import botocore.exceptions
@@ -28,14 +30,14 @@ from principalmapper.graphing import edge_identification
 from principalmapper.querying import query_interface
 from principalmapper.util import arns
 from principalmapper.util.botocore_tools import get_regions_to_search
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
 
 def create_graph(session: botocore.session.Session, service_list: list, region_allow_list: Optional[List[str]] = None,
                  region_deny_list: Optional[List[str]] = None, scps: Optional[List[List[dict]]] = None,
-                 client_args_map: Optional[dict] = None) -> Graph:
+                 client_args_map: Optional[dict] = None, skip_resource_policies: bool = False) -> Graph:
     """Constructs a Graph object.
 
     Information about the graph as it's built will be written to the IO parameter `output`.
@@ -59,6 +61,8 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
     if client_args_map is None:
         client_args_map = {}
 
+    overall_start = time.time()
+
     stsargs = client_args_map.get('sts', {})
     stsclient = session.create_client('sts', **stsargs)
     logger.debug(stsclient.meta.endpoint_url)
@@ -72,15 +76,20 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
     iamargs = client_args_map.get('iam', {})
     iamclient = session.create_client('iam', **iamargs)
 
+    t0 = time.time()
     results = get_nodes_groups_and_policies(iamclient)
     nodes_result = results['nodes']
     groups_result = results['groups']
     policies_result = results['policies']
+    logger.info('[Timing] IAM data gathering: {:.1f}s'.format(time.time() - t0))
 
     # Determine which nodes are admins and update node objects
+    t0 = time.time()
     update_admin_status(nodes_result, scps)
+    logger.info('[Timing] Admin status determination: {:.1f}s'.format(time.time() - t0))
 
     # Generate edges, generate Edge objects
+    t0 = time.time()
     edges_result = edge_identification.obtain_edges(
         session,
         service_list,
@@ -90,17 +99,38 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
         scps,
         client_args_map
     )
+    logger.info('[Timing] Edge identification: {:.1f}s'.format(time.time() - t0))
 
-    # Pull S3, SNS, SQS, KMS, and Secrets Manager resource policies
-    try:
-        policies_result.extend(get_s3_bucket_policies(session, client_args_map))
-        policies_result.extend(get_sns_topic_policies(session, region_allow_list, region_deny_list, client_args_map))
-        policies_result.extend(get_sqs_queue_policies(session, caller_identity['Account'], region_allow_list, region_deny_list, client_args_map))
-        policies_result.extend(get_kms_key_policies(session, region_allow_list, region_deny_list, client_args_map))
-        policies_result.extend(get_secrets_manager_policies(session, region_allow_list, region_deny_list, client_args_map))
-    except Exception as ex:
-        logger.warning('Error gathering resource policies. Graph will be created with potentially missing resource policies. Continuing.')
-        logger.debug('Exception was: {}'.format(ex))
+    # Pull S3, SNS, SQS, KMS, and Secrets Manager resource policies CONCURRENTLY
+    if skip_resource_policies:
+        logger.info('[Quick Mode] Skipping resource policy gathering')
+    else:
+        t0 = time.time()
+        account_id = caller_identity['Account']
+        resource_policy_tasks = {
+            'S3': lambda: get_s3_bucket_policies(session, client_args_map),
+            'SNS': lambda: get_sns_topic_policies(session, region_allow_list, region_deny_list, client_args_map),
+            'SQS': lambda: get_sqs_queue_policies(session, account_id, region_allow_list, region_deny_list, client_args_map),
+            'KMS': lambda: get_kms_key_policies(session, region_allow_list, region_deny_list, client_args_map),
+            'SecretsManager': lambda: get_secrets_manager_policies(session, region_allow_list, region_deny_list, client_args_map),
+        }
+
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = {executor.submit(fn): name for name, fn in resource_policy_tasks.items()}
+            for future in as_completed(futures):
+                service_name = futures[future]
+                try:
+                    result_policies = future.result()
+                    policies_result.extend(result_policies)
+                    logger.info('[Timing] {} resource policy gathering complete ({} policies)'.format(
+                        service_name, len(result_policies)))
+                except Exception as ex:
+                    logger.warning('Error gathering {} resource policies. Continuing.'.format(service_name))
+                    logger.debug('Exception was: {}'.format(ex))
+
+        logger.info('[Timing] All resource policy gathering: {:.1f}s'.format(time.time() - t0))
+
+    logger.info('[Timing] Total graph creation: {:.1f}s'.format(time.time() - overall_start))
 
     return Graph(nodes_result, edges_result, policies_result, groups_result, metadata)
 
@@ -988,6 +1018,11 @@ def get_organizations_data(session: botocore.session.Session) -> OrganizationTre
     result.accounts = account_ids
 
     return result
+
+
+def _build_policy_arn_index(policies: List[Policy]) -> Dict[str, Policy]:
+    """Build an ARN-to-Policy lookup dict for O(1) access. Called once, amortized over many lookups."""
+    return {p.arn: p for p in policies}
 
 
 def _get_policy_by_arn(arn: str, policies: List[Policy]) -> Optional[Policy]:

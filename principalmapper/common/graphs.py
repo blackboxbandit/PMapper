@@ -58,13 +58,13 @@ class Graph(object):
         if 'pmapper_version' not in metadata:
             raise ValueError('Incomplete metadata input, expected key: "pmapper_version"')
         self.metadata = metadata
+        # Build O(1) lookup index for searchable names
+        self._searchable_name_index = {node.searchable_name(): node for node in self.nodes}
 
     def get_node_by_searchable_name(self, name: str) -> Optional[Node]:
-        """Locates a node by a given searchable name, returns the Node or None"""
-        for node in self.nodes:
-            if node.searchable_name() == name:
-                return node
-        return None
+        """Locates a node by a given searchable name, returns the Node or None.
+        Uses an internal index for O(1) lookup instead of linear scan."""
+        return self._searchable_name_index.get(name)
 
     def store_graph_as_json(self, root_directory: str):
         """Stores the current Graph as a set of JSON documents on-disk in a standard layout.
@@ -153,66 +153,65 @@ class Graph(object):
         with open(policiesfilepath) as f:
             policies_file_contents = json.load(f)
 
+        # Build a dict keyed by (arn, name) for O(1) policy lookup instead of O(n) linear scan
+        policy_lookup = {}
         for policy in policies_file_contents:
-            policies.append(Policy(arn=policy['arn'], name=policy['name'], policy_doc=policy['policy_doc']))
+            p = Policy(arn=policy['arn'], name=policy['name'], policy_doc=policy['policy_doc'])
+            policies.append(p)
+            policy_lookup[(p.arn, p.name)] = p
 
         with open(groupsfilepath) as f:
             unresolved_groups = json.load(f)
         groups = []
+        # Build a dict keyed by group ARN for O(1) group lookup
+        group_lookup = {}
         for group in unresolved_groups:
-            # dig through string list of attached policies to match up with policy objects with matching ARNs
             group_policies = []
             for policy_ref in group['attached_policies']:
-                for policy in policies:
-                    if policy_ref['arn'] == policy.arn and policy_ref['name'] == policy.name:
-                        group_policies.append(policy)
-                        break
-            groups.append(Group(arn=group['arn'], attached_policies=group_policies))
+                key = (policy_ref['arn'], policy_ref['name'])
+                if key in policy_lookup:
+                    group_policies.append(policy_lookup[key])
+            g = Group(arn=group['arn'], attached_policies=group_policies)
+            groups.append(g)
+            group_lookup[g.arn] = g
 
         with open(nodesfilepath) as f:
             unresolved_nodes = json.load(f)
         nodes = []
+        # Build a dict keyed by node ARN for O(1) node lookup when resolving edges
+        node_lookup = {}
         for node in unresolved_nodes:
-            # dig through string list of groups and policies to match up with group and policy objects
+            # O(1) policy resolution via dict lookup
             node_policies = []
-            group_memberships = []
             for policy_ref in node['attached_policies']:
-                for policy in policies:
-                    if policy_ref['arn'] == policy.arn and policy_ref['name'] == policy.name:
-                        node_policies.append(policy)
-                        break
-            # match permission boundaries
+                key = (policy_ref['arn'], policy_ref['name'])
+                if key in policy_lookup:
+                    node_policies.append(policy_lookup[key])
+
+            # O(1) permission boundary resolution
             node_permission_boundary = node['permissions_boundary']
             if node_permission_boundary is not None:
-                # find policy by arn/name and load
-                for policy in policies:
-                    if policy.name == node_permission_boundary['name'] and policy.arn == node_permission_boundary['arn']:
-                        node_permission_boundary = policy
-                        break
+                key = (node_permission_boundary['arn'], node_permission_boundary['name'])
+                node_permission_boundary = policy_lookup.get(key, node_permission_boundary)
 
-            for group in groups:
-                if group.arn in node['group_memberships']:
-                    group_memberships.append(group)
-            nodes.append(Node(arn=node['arn'], id_value=node['id_value'], attached_policies=node_policies,
-                              group_memberships=group_memberships, trust_policy=node['trust_policy'],
-                              instance_profile=node['instance_profile'], num_access_keys=node['access_keys'],
-                              active_password=node['active_password'], is_admin=node['is_admin'],
-                              permissions_boundary=node_permission_boundary, has_mfa=node['has_mfa'], tags=node['tags']))
+            # O(1) group membership resolution
+            group_memberships = [group_lookup[g_arn] for g_arn in node['group_memberships'] if g_arn in group_lookup]
+
+            n = Node(arn=node['arn'], id_value=node['id_value'], attached_policies=node_policies,
+                     group_memberships=group_memberships, trust_policy=node['trust_policy'],
+                     instance_profile=node['instance_profile'], num_access_keys=node['access_keys'],
+                     active_password=node['active_password'], is_admin=node['is_admin'],
+                     permissions_boundary=node_permission_boundary, has_mfa=node['has_mfa'], tags=node['tags'])
+            nodes.append(n)
+            node_lookup[n.arn] = n
 
         with open(edgesfilepath) as f:
             unresolved_edges = json.load(f)
         edges = []
         for edge in unresolved_edges:
-            # dig through nodes to find matching ARNs
-            source = None
-            destination = None
-            for node in nodes:
-                if source is None and node.arn == edge['source']:
-                    source = node
-                if destination is None and node.arn == edge['destination']:
-                    destination = node
-                if source is not None and destination is not None:
-                    break
+            # O(1) node resolution via dict lookup instead of O(n) linear scan
+            source = node_lookup.get(edge['source'])
+            destination = node_lookup.get(edge['destination'])
             edges.append(Edge(source=source, destination=destination, reason=edge['reason'],
                               short_reason=edge['short_reason'], exploit_cmds=edge.get('exploit_cmds', None)))
 

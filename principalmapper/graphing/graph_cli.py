@@ -19,6 +19,7 @@ import json
 import logging
 import os
 import re
+import time
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
@@ -57,6 +58,11 @@ def provide_arguments(parser: ArgumentParser):
         '--ignore-orgs',
         action='store_true',
         help='If specified, skips the check for stored AWS Organizations data and ignores any potentially applicable SCPs during the graph creation process'
+    )
+    create_parser.add_argument(
+        '--quick',
+        action='store_true',
+        help='If specified, skips resource policy gathering (S3, SNS, SQS, KMS, SecretsManager) for faster graph creation. Useful for quick security scans where resource policies are not needed.'
     )
 
     # create cmd args for commands where we pull data other than from the AWS APIs
@@ -180,9 +186,15 @@ def process_arguments(parsed_args: Namespace):
         else:
             client_args_map = None
 
+        t_start = time.time()
         graph = graph_actions.create_new_graph(session, service_list, parsed_args.include_regions,
-                                               parsed_args.exclude_regions, scps, client_args_map)
+                                               parsed_args.exclude_regions, scps, client_args_map,
+                                               skip_resource_policies=getattr(parsed_args, 'quick', False))
+        elapsed = time.time() - t_start
         graph_actions.print_graph_data(graph)
+        print('\n  Graph created in {:.1f} seconds.'.format(elapsed))
+        if getattr(parsed_args, 'quick', False):
+            print('  (Quick mode: resource policy gathering was skipped)')
         graph.store_graph_as_json(os.path.join(get_storage_root(), graph.metadata['account_id']))
 
     elif parsed_args.picked_graph_cmd == 'display':

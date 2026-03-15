@@ -16,7 +16,6 @@
 #      You should have received a copy of the GNU Affero General Public License
 #      along with Principal Mapper.  If not, see <https://www.gnu.org/licenses/>.
 
-import copy
 import hashlib
 import logging
 from typing import Dict, Tuple, Any, Union
@@ -208,7 +207,7 @@ def local_check_authorization_handling_mfa(principal: Node, action_to_check: str
     if local_check_authorization_full(principal, action_to_check, resource_to_check, condition_keys_to_check, resource_policy, resource_owner, service_control_policy_groups, session_policy):
         return True, False
 
-    new_condition_keys = copy.deepcopy(condition_keys_to_check)
+    new_condition_keys = dict(condition_keys_to_check)
     prepped_condition_keys = _prepare_condition_context(new_condition_keys)
     if 'aws:MultiFactorAuthAge' not in prepped_condition_keys:
         prepped_condition_keys.update({'aws:MultiFactorAuthAge': '1'})
@@ -230,15 +229,14 @@ def local_check_authorization(principal: Node, action_to_check: str, resource_to
     aws:userid.
     """
 
-    conditions_keys_copy = copy.deepcopy(condition_keys_to_check)
-    prepped_condition_keys = _prepare_condition_context(conditions_keys_copy)
+    prepped_condition_keys = _prepare_condition_context(dict(condition_keys_to_check))
     prepped_condition_keys.update(_infer_condition_keys(principal, prepped_condition_keys))
 
     logger.debug('Testing authorization for Principal: {}, Action: {}, Resource: {}, Conditions: {}'.format(
         principal.arn,
         action_to_check,
         resource_to_check,
-        conditions_keys_copy
+        prepped_condition_keys
     ))
 
     # Handle permission boundaries if applicable
@@ -284,8 +282,7 @@ def local_check_authorization_full(principal: Node, action_to_check: str, resour
     if resource_policy is not None and resource_owner is None:
         raise ValueError('Must specify the AWS Account ID of the owner of the resource when specifying a resource policy')
 
-    conditions_keys_copy = copy.deepcopy(condition_keys_to_check)
-    prepped_condition_keys = _prepare_condition_context(conditions_keys_copy)
+    prepped_condition_keys = _prepare_condition_context(dict(condition_keys_to_check))
     prepped_condition_keys.update(_infer_condition_keys(principal, prepped_condition_keys))
 
     is_not_service_linked_role = not _check_if_service_linked_role(principal)
@@ -296,7 +293,7 @@ def local_check_authorization_full(principal: Node, action_to_check: str, resour
             principal.arn,
             action_to_check,
             resource_to_check,
-            conditions_keys_copy,
+            prepped_condition_keys,
             resource_policy,
             service_control_policy_groups,
             session_policy

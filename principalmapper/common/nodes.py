@@ -32,6 +32,10 @@ class Node(object):
 
     * (1.1.0) Added permissions_boundary support, has_mfa support, tags support"""
 
+    __slots__ = ('arn', 'id_value', 'attached_policies', 'group_memberships', 'trust_policy',
+                 'instance_profile', 'active_password', 'access_keys', 'is_admin',
+                 'permissions_boundary', 'has_mfa', 'tags', 'cache')
+
     def __init__(self, arn: str, id_value: str, attached_policies: Optional[List[Policy]],
                  group_memberships: Optional[List[Group]], trust_policy: Optional[dict],
                  instance_profile: Optional[List[str]], num_access_keys: int, active_password: bool, is_admin: bool,

@@ -21,6 +21,8 @@ class Policy(object):
     is attached to (arn is the IAM User/Role for inline, policy ARN otherwose), what its name is (inline),
     and the contents of the policy (in dictionary form)."""
 
+    __slots__ = ('arn', 'name', 'policy_doc')
+
     def __init__(self, arn: str, name: str, policy_doc: dict):
         """Constructor.
 

@@ -24,6 +24,8 @@ class Edge(object):
     the source Node is able to access the destination Node.
     """
 
+    __slots__ = ('source', 'destination', 'reason', 'short_reason', 'exploit_cmds')
+
     def __init__(self, source, destination, reason: str, short_reason: str, exploit_cmds=None):
         """Constructor"""
         if source is None:
