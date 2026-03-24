@@ -30,6 +30,7 @@ from principalmapper.graphing import edge_identification
 from principalmapper.querying import query_interface
 from principalmapper.util import arns
 from principalmapper.util.botocore_tools import get_regions_to_search
+from principalmapper.util.progress import ProgressTracker
 from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,17 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
 
     overall_start = time.time()
 
+    # Determine phases for progress tracking
+    phase_count = 3  # IAM, Admin, Edges
+    if not skip_resource_policies:
+        phase_count = 4  # + Resource Policies
+
+    phase_names = ['IAM Data Gathering', 'Admin Status Check', 'Edge Identification']
+    if not skip_resource_policies:
+        phase_names.append('Resource Policies')
+
+    progress = ProgressTracker(title='PMapper Graph Creation', phases=phase_names)
+
     stsargs = client_args_map.get('sts', {})
     stsclient = session.create_client('sts', **stsargs)
     logger.debug(stsclient.meta.endpoint_url)
@@ -76,19 +88,27 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
     iamargs = client_args_map.get('iam', {})
     iamclient = session.create_client('iam', **iamargs)
 
+    # Phase 1: IAM Gathering
+    progress.set_phase('IAM Data Gathering', 'users, roles, groups, policies')
     t0 = time.time()
     results = get_nodes_groups_and_policies(iamclient)
     nodes_result = results['nodes']
     groups_result = results['groups']
     policies_result = results['policies']
     logger.info('[Timing] IAM data gathering: {:.1f}s'.format(time.time() - t0))
+    progress.complete_phase('{} nodes, {} groups, {} policies'.format(
+        len(nodes_result), len(groups_result), len(policies_result)))
 
-    # Determine which nodes are admins and update node objects
+    # Phase 2: Admin status
+    progress.set_phase('Admin Status Check', 'analyzing {} principals'.format(len(nodes_result)))
     t0 = time.time()
     update_admin_status(nodes_result, scps)
+    admin_count = sum(1 for n in nodes_result if n.is_admin)
     logger.info('[Timing] Admin status determination: {:.1f}s'.format(time.time() - t0))
+    progress.complete_phase('{} admins identified'.format(admin_count))
 
-    # Generate edges, generate Edge objects
+    # Phase 3: Generate edges
+    progress.set_phase('Edge Identification', 'checking {} services'.format(len(service_list)))
     t0 = time.time()
     edges_result = edge_identification.obtain_edges(
         session,
@@ -97,14 +117,17 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
         region_allow_list,
         region_deny_list,
         scps,
-        client_args_map
+        client_args_map,
+        progress=progress
     )
     logger.info('[Timing] Edge identification: {:.1f}s'.format(time.time() - t0))
+    progress.complete_phase('{} edges found'.format(len(edges_result)))
 
-    # Pull S3, SNS, SQS, KMS, and Secrets Manager resource policies CONCURRENTLY
+    # Phase 4: Pull S3, SNS, SQS, KMS, and Secrets Manager resource policies CONCURRENTLY
     if skip_resource_policies:
         logger.info('[Quick Mode] Skipping resource policy gathering')
     else:
+        progress.set_phase('Resource Policies', 'S3, SNS, SQS, KMS, SecretsManager')
         t0 = time.time()
         account_id = caller_identity['Account']
         resource_policy_tasks = {
@@ -115,6 +138,8 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
             'SecretsManager': lambda: get_secrets_manager_policies(session, region_allow_list, region_deny_list, client_args_map),
         }
 
+        completed_count = 0
+        total_services = len(resource_policy_tasks)
         with ThreadPoolExecutor(max_workers=5) as executor:
             futures = {executor.submit(fn): name for name, fn in resource_policy_tasks.items()}
             for future in as_completed(futures):
@@ -122,17 +147,25 @@ def create_graph(session: botocore.session.Session, service_list: list, region_a
                 try:
                     result_policies = future.result()
                     policies_result.extend(result_policies)
+                    completed_count += 1
+                    progress.set_step(service_name, completed_count / total_services)
                     logger.info('[Timing] {} resource policy gathering complete ({} policies)'.format(
                         service_name, len(result_policies)))
                 except Exception as ex:
+                    completed_count += 1
+                    progress.set_step(service_name, completed_count / total_services)
                     logger.warning('Error gathering {} resource policies. Continuing.'.format(service_name))
                     logger.debug('Exception was: {}'.format(ex))
 
         logger.info('[Timing] All resource policy gathering: {:.1f}s'.format(time.time() - t0))
+        progress.complete_phase('{} resource policies'.format(len(policies_result)))
 
-    logger.info('[Timing] Total graph creation: {:.1f}s'.format(time.time() - overall_start))
+    total_elapsed = time.time() - overall_start
+    logger.info('[Timing] Total graph creation: {:.1f}s'.format(total_elapsed))
+    progress.finish()
 
     return Graph(nodes_result, edges_result, policies_result, groups_result, metadata)
+
 
 
 def get_nodes_groups_and_policies(iamclient) -> dict:

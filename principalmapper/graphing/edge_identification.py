@@ -18,7 +18,7 @@
 import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 import botocore.session
 
@@ -33,6 +33,9 @@ from principalmapper.graphing.lambda_edges import LambdaEdgeChecker
 from principalmapper.graphing.sagemaker_edges import SageMakerEdgeChecker
 from principalmapper.graphing.ssm_edges import SSMEdgeChecker
 from principalmapper.graphing.sts_edges import STSEdgeChecker
+
+if TYPE_CHECKING:
+    from principalmapper.util.progress import ProgressTracker
 
 
 logger = logging.getLogger(__name__)
@@ -55,7 +58,8 @@ checker_map = {
 
 def obtain_edges(session: Optional[botocore.session.Session], checker_list: List[str], nodes: List[Node],
                  region_allow_list: Optional[List[str]] = None, region_deny_list: Optional[List[str]] = None,
-                 scps: Optional[List[List[dict]]] = None, client_args_map: Optional[dict] = None) -> List[Edge]:
+                 scps: Optional[List[List[dict]]] = None, client_args_map: Optional[dict] = None,
+                 progress: Optional['ProgressTracker'] = None) -> List[Edge]:
     """Given a list of nodes and a botocore Session, return a list of edges between those nodes. Only checks
     against services passed in the checker_list param. Runs edge checkers concurrently for speed."""
 
@@ -67,14 +71,22 @@ def obtain_edges(session: Optional[botocore.session.Session], checker_list: List
         if check in checker_map:
             checker_objs.append((check, checker_map[check](session)))
 
+    total_checkers = len(checker_objs)
+    completed_count = [0]  # mutable for closure
+
     def _run_checker(name_and_checker):
         """Execute a single edge checker and return its edges with timing info."""
         name, checker_obj = name_and_checker
         t0 = time.time()
         logger.info('[Edge Check] Starting: {}'.format(name))
+        if progress:
+            progress.set_step(name)
         edges = checker_obj.return_edges(nodes, region_allow_list, region_deny_list, scps, client_args_map)
         elapsed = time.time() - t0
         logger.info('[Edge Check] {} finished: {} edges found in {:.1f}s'.format(name, len(edges), elapsed))
+        completed_count[0] += 1
+        if progress:
+            progress.set_sub_progress(completed_count[0] / total_checkers)
         return edges
 
     result = []
